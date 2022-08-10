@@ -44,7 +44,8 @@ func main() {
 		fmt.Printf("Reading REST file %s\n", restFile)
 		restBytes, err := ioutil.ReadFile(restFile)
 		if err != nil {
-			fail(err)
+			fmt.Printf("Skipping missing REST file\n")
+			continue
 		}
 
 		rest := &Swagger{}
@@ -110,6 +111,7 @@ func main() {
 	if err != nil {
 		fail(err)
 	}
+	fmt.Printf("Saved output to: %s\n", finalFile)
 }
 
 func fail(err error) {
