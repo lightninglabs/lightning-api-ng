@@ -1,0 +1,9 @@
+.fieldName {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.fieldName:hover {
+  opacity: 0.8;
+}
