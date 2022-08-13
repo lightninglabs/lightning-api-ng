@@ -57,9 +57,27 @@ const config = {
         items: [
           {
             type: 'doc',
-            docId: 'lnd/index',
+            docId: 'api/lnd/index',
             position: 'left',
-            label: 'API',
+            label: 'LND',
+          },
+          {
+            type: 'doc',
+            docId: 'api/loop/index',
+            position: 'left',
+            label: 'Loop',
+          },
+          {
+            type: 'doc',
+            docId: 'api/pool/index',
+            position: 'left',
+            label: 'Pool',
+          },
+          {
+            type: 'doc',
+            docId: 'api/faraday/index',
+            position: 'left',
+            label: 'Faraday',
           },
           {
             href: 'https://github.com/lightninglabs/api-docs-site',

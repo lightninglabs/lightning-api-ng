@@ -12,7 +12,9 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "generate-docs": "ts-node ./tools/generate-docs/main.ts",
+    "watch": "nodemon --watch ./tools/generate-docs --ext ts --exec \"yarn generate-docs\""
   },
   "dependencies": {
     "@docusaurus/core": "2.0.1",
