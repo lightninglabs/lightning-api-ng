@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { CATEGORY_FILE, JSON_DIR, OUTPUT_DIR } from './constants';
 import { Daemon } from './daemon';
+import { templates } from './templates';
 import { JsonDaemon } from './types';
 import { writeCategoryJson } from './utils';
 
@@ -15,6 +16,9 @@ const main = async () => {
     fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
     log(`Removed output dir ${OUTPUT_DIR}`);
   }
+
+  log('Loading templates');
+  templates.load();
 
   log(`Scanning for JSON files in ${path.resolve(JSON_DIR)}`);
   const files = fs
