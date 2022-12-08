@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { OUTPUT_DIR } from './constants';
+import { Message } from './message';
 import { Package } from './package';
 import { JsonDaemon } from './types';
 
@@ -29,7 +30,10 @@ export class Daemon {
   }
 
   getMessage(fullType: string) {
-    const [pkg, msg] = fullType.split('.');
+    // split "lnrpc.Invoice.InvoiceState" into "lnrpc" and "Invoice.InvoiceState"
+    const period = fullType.indexOf('.');
+    const pkg = fullType.substring(0, period);
+    const msg = fullType.substring(period + 1);
 
     if (!this.packages.has(pkg)) {
       throw new Error(`Cannot find package ${pkg} for ${fullType}`);
@@ -42,6 +46,30 @@ export class Daemon {
       );
     }
     return file.messages.get(msg);
+  }
+
+  getNestedMessages(message: Message, allMessages: Map<string, Message>) {
+    message.fields
+      .map((f) => f.fullType)
+      // only include the non-native field types (ex: lnrpc.OutPoint)
+      .filter((t) => t.includes('.'))
+      // add the messages for each type
+      .forEach((t) => {
+        try {
+          const msg = this.getMessage(t);
+          // add the message to the map if it's not in there already
+          if (!allMessages.has(t)) {
+            // add the message to the map
+            allMessages.set(t, msg);
+
+            // add the nested messages for this message
+            this.getNestedMessages(msg, allMessages);
+          }
+        } catch {
+          // ignore missing messages because the field's fullType may
+          // reference an enum and there's no way to tell from the name alone
+        }
+      });
   }
 
   exportMarkdown() {

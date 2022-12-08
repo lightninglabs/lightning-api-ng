@@ -31,3 +31,9 @@ rpc {{name}} ({{#if requestStreaming}}stream {{/if}}{{requestType}}) returns ({{
 {{#response}}
 {{> partial_message}}
 {{/response}}
+
+## Nested Messages
+
+{{#nestedMessages}}
+{{> partial_message}}
+{{/nestedMessages}}

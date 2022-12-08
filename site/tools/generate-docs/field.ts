@@ -13,6 +13,15 @@ export default class Field {
     return this.type;
   }
 
+  get linkedType() {
+    if (this.fullType.includes('.')) {
+      const hash = this.fullType.toLowerCase().split('.').join('');
+      return `[\`${this.grpcType}\`](#${hash})`;
+    } else {
+      return `\`${this.grpcType}\``;
+    }
+  }
+
   constructor(json: JsonField) {
     this.name = json.name;
     this.description = json.description

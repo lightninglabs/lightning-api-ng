@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
 import { Daemon } from './daemon';
+import { Message } from './message';
 import { RestMapping } from './rest-mapping';
 import { templates } from './templates';
 import { JsonMethod } from './types';
@@ -12,12 +13,16 @@ const { log } = console;
 export class Method {
   name: string;
   description: string;
-  command: string;
+  source: string;
+  commandLine: string;
+  commandLineHelp: string;
   requestType: string;
   requestFullType: string;
+  requestTypeSource: string;
   requestStreaming: boolean;
   responseType: string;
   responseFullType: string;
+  responseTypeSource: string;
   responseStreaming: boolean;
   restMappings: RestMapping[] = [];
 
@@ -29,6 +34,13 @@ export class Method {
 
   get response() {
     return this.daemon.getMessage(this.responseFullType);
+  }
+
+  get nestedMessages() {
+    const messages = new Map<string, Message>();
+    this.daemon.getNestedMessages(this.request, messages);
+    this.daemon.getNestedMessages(this.response, messages);
+    return Array.from(messages.values());
   }
 
   get streamingDirection() {
@@ -50,6 +62,17 @@ export class Method {
     log(`Creating method ${json.name}`);
     this.name = json.name;
     this.parseDescription(json.description);
+    this.source = json.source;
+    this.commandLine = json.commandLine;
+    this.commandLineHelp = json.commandLineHelp;
+    this.requestType = json.requestType;
+    this.requestFullType = json.requestFullType;
+    this.requestTypeSource = json.requestTypeSource;
+    this.requestStreaming = json.requestStreaming;
+    this.responseType = json.responseType;
+    this.responseFullType = json.responseFullType;
+    this.responseTypeSource = json.responseTypeSource;
+    this.responseStreaming = json.responseStreaming;
     this.requestType = json.requestType;
     this.requestFullType = json.requestFullType;
     this.requestStreaming = json.requestStreaming;
@@ -67,9 +90,8 @@ export class Method {
     if (!description) return;
     const lines = description.split('\n');
     if (lines[0].includes(': `')) {
-      // if the first line looks like "lncli: `closechannel`", it is a command
-      this.command = lines[0];
-      // log('lines[0]', lines[0]);
+      // if the first line looks like "lncli: `closechannel`", it is
+      // a command, so skip it
       this.description = lines.slice(1).join('\n');
     } else {
       this.description = description;

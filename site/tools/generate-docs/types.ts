@@ -6,11 +6,16 @@ export interface JsonRestMapping {
 export interface JsonMethod {
   name: string;
   description: string;
+  source: string;
+  commandLine: string;
+  commandLineHelp: string;
   requestType: string;
   requestFullType: string;
+  requestTypeSource: string;
   requestStreaming: boolean;
   responseType: string;
   responseFullType: string;
+  responseTypeSource: string;
   responseStreaming: boolean;
   restMappings: JsonRestMapping[];
 }
