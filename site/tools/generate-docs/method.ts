@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
 import { Daemon } from './daemon';
+import Enum from './enum';
 import { Message } from './message';
 import { RestMapping } from './rest-mapping';
 import { templates } from './templates';
@@ -41,6 +42,13 @@ export class Method {
     this.daemon.getNestedMessages(this.request, messages);
     this.daemon.getNestedMessages(this.response, messages);
     return Array.from(messages.values());
+  }
+
+  get nestedEnums() {
+    const enums = new Map<string, Enum>();
+    this.daemon.getNestedEnums(this.request, enums);
+    this.daemon.getNestedEnums(this.response, enums);
+    return Array.from(enums.values());
   }
 
   get streamingDirection() {

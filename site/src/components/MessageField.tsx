@@ -15,14 +15,13 @@ const MessageField: React.FC<Props> = ({ name, children }) => {
     setIsExpanded((v) => !v);
   }, []);
 
+  let cn = styles.fieldName;
+  if (!!children) cn = `${cn} ${styles.collapsible}`;
+
   return (
     <div>
-      <span className={styles.fieldName} onClick={handleClick}>
-        {isExpanded ? (
-          <ChevronUp style={{ cursor: 'pointer' }} />
-        ) : (
-          <ChevronDown style={{ cursor: 'pointer' }} />
-        )}
+      <span className={cn} onClick={handleClick}>
+        {children && <>{isExpanded ? <ChevronUp /> : <ChevronDown />}</>}
         <code>{name}</code>
       </span>
       <Collapse isOpened={isExpanded}>

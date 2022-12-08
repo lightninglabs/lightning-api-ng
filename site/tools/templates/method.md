@@ -32,8 +32,18 @@ rpc {{name}} ({{#if requestStreaming}}stream {{/if}}{{requestType}}) returns ({{
 {{> partial_message}}
 {{/response}}
 
+{{#if nestedMessages}}
 ## Nested Messages
+{{/if}}
 
 {{#nestedMessages}}
 {{> partial_message}}
 {{/nestedMessages}}
+
+{{#if nestedEnums}}
+## Enums
+{{/if}}
+
+{{#nestedEnums}}
+{{> partial_enum}}
+{{/nestedEnums}}

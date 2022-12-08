@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { OUTPUT_DIR } from './constants';
+import Enum from './enum';
 import { Message } from './message';
 import { Package } from './package';
 import { JsonDaemon } from './types';
@@ -29,21 +30,29 @@ export class Daemon {
     return this.name[0].toUpperCase() + this.name.substring(1);
   }
 
-  getMessage(fullType: string) {
+  getMessage(fullType: string, throwError = true) {
     // split "lnrpc.Invoice.InvoiceState" into "lnrpc" and "Invoice.InvoiceState"
     const period = fullType.indexOf('.');
     const pkg = fullType.substring(0, period);
     const msg = fullType.substring(period + 1);
 
     if (!this.packages.has(pkg)) {
-      throw new Error(`Cannot find package ${pkg} for ${fullType}`);
+      if (throwError) {
+        throw new Error(`Cannot find package ${pkg} for ${fullType}`);
+      } else {
+        return;
+      }
     }
     const file = this.packages.get(pkg);
 
     if (!file.messages.has(msg)) {
-      throw new Error(
-        `Cannot find message ${msg} for ${fullType} in the ${pkg} package`
-      );
+      if (throwError) {
+        throw new Error(
+          `Cannot find message ${msg} for ${fullType} in the ${pkg} package`
+        );
+      } else {
+        return;
+      }
     }
     return file.messages.get(msg);
   }
@@ -55,19 +64,63 @@ export class Daemon {
       .filter((t) => t.includes('.'))
       // add the messages for each type
       .forEach((t) => {
-        try {
-          const msg = this.getMessage(t);
-          // add the message to the map if it's not in there already
-          if (!allMessages.has(t)) {
-            // add the message to the map
-            allMessages.set(t, msg);
+        const msg = this.getMessage(t, false);
+        // add the message to the map if it's not in there already
+        if (msg) {
+          // add the message to the map
+          allMessages.set(t, msg);
 
-            // add the nested messages for this message
-            this.getNestedMessages(msg, allMessages);
-          }
-        } catch {
-          // ignore missing messages because the field's fullType may
-          // reference an enum and there's no way to tell from the name alone
+          // add the nested messages for this message
+          this.getNestedMessages(msg, allMessages);
+        }
+      });
+  }
+
+  getEnum(fullType: string, throwError = true) {
+    // split "lnrpc.Invoice.InvoiceState" into "lnrpc" and "Invoice.InvoiceState"
+    const period = fullType.indexOf('.');
+    const pkgName = fullType.substring(0, period);
+    const enumType = fullType.substring(period + 1);
+
+    if (!this.packages.has(pkgName)) {
+      if (throwError) {
+        throw new Error(`Cannot find package ${pkgName} for ${fullType}`);
+      } else {
+        return;
+      }
+    }
+    const pkg = this.packages.get(pkgName);
+
+    if (!pkg.enums.has(enumType)) {
+      if (throwError) {
+        throw new Error(
+          `Cannot find enum ${enumType} for ${fullType} in the ${pkgName} package`
+        );
+      } else {
+        return;
+      }
+    }
+    return pkg.enums.get(enumType);
+  }
+
+  getNestedEnums(message: Message, allEnums: Map<string, Enum>) {
+    message.fields
+      .map((f) => f.fullType)
+      // only include the non-native field types (ex: lnrpc.OutPoint)
+      .filter((t) => t.includes('.'))
+      // add the messages for each type
+      .forEach((t) => {
+        const enu = this.getEnum(t, false);
+        if (enu) {
+          allEnums.set(t, enu);
+          return;
+        }
+        // if the enum wasn't found, look for a nested message which
+        // may have enum fields
+        const msg = this.getMessage(t, false);
+        if (msg) {
+          // search the nested messages for more enums
+          this.getNestedEnums(msg, allEnums);
         }
       });
   }

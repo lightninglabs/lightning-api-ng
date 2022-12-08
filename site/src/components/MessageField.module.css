@@ -1,9 +1,12 @@
 .fieldName {
   display: inline-flex;
   align-items: center;
+}
+
+.collapsible {
   cursor: pointer;
 }
 
-.fieldName:hover {
+.collapsible:hover {
   opacity: 0.8;
 }

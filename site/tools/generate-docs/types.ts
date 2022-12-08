@@ -34,8 +34,22 @@ export interface JsonField {
 
 export interface JsonMessage {
   name: string;
+  longName: string;
+  fullName: string;
   description: string;
   fields: JsonField[];
+}
+
+export interface JsonEnum {
+  name: string;
+  longName: string;
+  fullName: string;
+  description: string;
+  values: {
+    name: string;
+    number: string;
+    description: string;
+  }[];
 }
 
 export interface JsonService {
@@ -49,6 +63,7 @@ export interface JsonProtoFile {
   description: string;
   package: string;
   messages: JsonMessage[];
+  enums: JsonEnum[];
   services: JsonService[];
 }
 
