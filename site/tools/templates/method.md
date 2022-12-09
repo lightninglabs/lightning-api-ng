@@ -16,11 +16,15 @@ This is a {{streamingDirection}}-streaming RPC
 rpc {{name}} ({{#if requestStreaming}}stream {{/if}}{{requestType}}) returns ({{#if responseStreaming}}stream {{/if}}{{responseType}});
 ```
 
+{{#if hasRestMethods}}
+
 ### REST
 
-| HTTP Method       | Path   |
-| ----------------- | ------ |
-| <Pill>TODO</Pill> | `TODO` |
+| HTTP Method                   | Path           |
+| ----------------------------- | -------------- |
+| <Pill> {{restMethod}} </Pill> | `{{restPath}}` |
+
+{{/if}}
 
 ## Messages
 
@@ -33,7 +37,9 @@ rpc {{name}} ({{#if requestStreaming}}stream {{/if}}{{requestType}}) returns ({{
 {{/response}}
 
 {{#if nestedMessages}}
+
 ## Nested Messages
+
 {{/if}}
 
 {{#nestedMessages}}
@@ -41,7 +47,9 @@ rpc {{name}} ({{#if requestStreaming}}stream {{/if}}{{requestType}}) returns ({{
 {{/nestedMessages}}
 
 {{#if nestedEnums}}
+
 ## Enums
+
 {{/if}}
 
 {{#nestedEnums}}

@@ -4,6 +4,7 @@ import { OUTPUT_DIR } from './constants';
 import Enum from './enum';
 import { Message } from './message';
 import { Package } from './package';
+import { RestTypes } from './rest-types';
 import { JsonDaemon } from './types';
 
 const { log } = console;
@@ -11,10 +12,14 @@ const { log } = console;
 export class Daemon {
   name: string;
   packages = new Map<string, Package>();
+  restTypes: RestTypes;
 
   constructor(daemonName: string, json: JsonDaemon) {
     log(`Creating daemon ${daemonName} with ${json.files.length} proto files`);
     this.name = daemonName;
+
+    this.restTypes = new RestTypes(json.restTypes);
+
     json.files.forEach((f) => {
       let pkg = this.packages.get(f.package);
       if (!pkg) {
@@ -33,28 +38,30 @@ export class Daemon {
   getMessage(fullType: string, throwError = true) {
     // split "lnrpc.Invoice.InvoiceState" into "lnrpc" and "Invoice.InvoiceState"
     const period = fullType.indexOf('.');
-    const pkg = fullType.substring(0, period);
-    const msg = fullType.substring(period + 1);
+    const pkgName = fullType.substring(0, period);
+    const msgType = fullType.substring(period + 1);
 
-    if (!this.packages.has(pkg)) {
+    if (!this.packages.has(pkgName)) {
       if (throwError) {
-        throw new Error(`Cannot find package ${pkg} for ${fullType}`);
+        throw new Error(`Cannot find package ${pkgName} for ${fullType}`);
       } else {
         return;
       }
     }
-    const file = this.packages.get(pkg);
+    const pkg = this.packages.get(pkgName);
 
-    if (!file.messages.has(msg)) {
+    if (!pkg.messages.has(msgType)) {
       if (throwError) {
         throw new Error(
-          `Cannot find message ${msg} for ${fullType} in the ${pkg} package`
+          `Cannot find message ${msgType} for ${fullType} in the ${pkgName} package`
         );
       } else {
         return;
       }
     }
-    return file.messages.get(msg);
+    const msg = pkg.messages.get(msgType);
+    this.restTypes.updateMessage(msg);
+    return msg;
   }
 
   getNestedMessages(message: Message, allMessages: Map<string, Message>) {

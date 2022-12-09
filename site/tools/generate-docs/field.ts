@@ -8,8 +8,12 @@ export default class Field {
   fullType: string;
   isoneof: boolean;
 
+  /** This value is set externally */
+  restType = 'unknown';
+  restPlacement = 'unknown';
+
   get grpcType() {
-    if (this.label === 'repeated') return `array ${this.type}`;
+    if (this.label === 'repeated') return `${this.type}[]`;
     return this.type;
   }
 

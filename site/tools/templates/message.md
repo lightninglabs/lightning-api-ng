@@ -5,7 +5,7 @@
 | ----- | --------- | --------- |
 {{/if}}
 {{#fields}}
-| <MessageField name="{{name}}">{{description}}</MessageField> | {{{linkedType}}} | `TODO` |
+| <MessageField name="{{name}}">{{description}}</MessageField> | {{{linkedType}}} | `{{restType}}` |
 {{/fields}}
 {{^fields}}
 :::note
@@ -14,4 +14,3 @@ This response has no parameters.
 
 :::
 {{/fields}}
-

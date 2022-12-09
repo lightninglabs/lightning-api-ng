@@ -7,7 +7,7 @@
 | ----- | --------- | --------- | -------------- |
 {{/if}}
 {{#fields}}
-| <MessageField name="{{name}}">{{description}}</MessageField> | {{{linkedType}}} | `TODO` | TODO |
+| <MessageField name="{{name}}">{{{description}}}</MessageField> | {{{linkedType}}} | `{{restType}}` | `{{restPlacement}}` |
 {{/fields}}
 {{^fields}}
 :::note

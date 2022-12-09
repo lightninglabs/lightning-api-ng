@@ -1,6 +1,49 @@
+export interface JsonRestEnum {
+  default: string;
+  enum: string[];
+  type: string;
+}
+
+export interface JsonRestField {
+  $ref?: string;
+  type?: string;
+  description: string;
+  title?: string;
+  format?: string;
+  items?: {
+    $ref?: string;
+    type?: string;
+  };
+}
+
+export interface JsonRestObject {
+  type: string;
+  properties: { [key: string]: JsonRestField };
+}
+
+export type JsonRestSchemaObject = JsonRestObject | JsonRestEnum;
+
+export interface JsonRestTypes {
+  [key: string]: JsonRestSchemaObject;
+}
+
+export interface JsonRestParameter {
+  name: string;
+  format: string;
+  type: string;
+  in: string;
+  schema?: {
+    $ref: string;
+  };
+}
+
 export interface JsonRestMapping {
   method: string;
   path: string;
+  details: {
+    operationId: string;
+    parameters: JsonRestParameter[];
+  };
 }
 
 export interface JsonMethod {
@@ -69,4 +112,5 @@ export interface JsonProtoFile {
 
 export interface JsonDaemon {
   files: JsonProtoFile[];
+  restTypes: JsonRestTypes;
 }

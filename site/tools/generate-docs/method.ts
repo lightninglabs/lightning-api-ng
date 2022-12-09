@@ -25,30 +25,49 @@ export class Method {
   responseFullType: string;
   responseTypeSource: string;
   responseStreaming: boolean;
-  restMappings: RestMapping[] = [];
+  restMapping?: RestMapping;
 
   daemon: Daemon;
 
+  // private fields used to avoid redundant computation in getters
+  private _request?: Message;
+  private _response?: Message;
+  private _nestedMessages?: Message[];
+  private _nestedEnums?: Enum[];
+
   get request() {
-    return this.daemon.getMessage(this.requestFullType);
+    if (!this._request) {
+      this._request = this.daemon.getMessage(this.requestFullType);
+      this.restMapping?.updateMessage(this._request);
+    }
+    return this._request;
   }
 
   get response() {
-    return this.daemon.getMessage(this.responseFullType);
+    if (!this._response) {
+      this._response = this.daemon.getMessage(this.responseFullType);
+    }
+    return this._response;
   }
 
   get nestedMessages() {
-    const messages = new Map<string, Message>();
-    this.daemon.getNestedMessages(this.request, messages);
-    this.daemon.getNestedMessages(this.response, messages);
-    return Array.from(messages.values());
+    if (!this._nestedMessages) {
+      const messages = new Map<string, Message>();
+      this.daemon.getNestedMessages(this.request, messages);
+      this.daemon.getNestedMessages(this.response, messages);
+      this._nestedMessages = Array.from(messages.values());
+    }
+    return this._nestedMessages;
   }
 
   get nestedEnums() {
-    const enums = new Map<string, Enum>();
-    this.daemon.getNestedEnums(this.request, enums);
-    this.daemon.getNestedEnums(this.response, enums);
-    return Array.from(enums.values());
+    if (!this._nestedEnums) {
+      const enums = new Map<string, Enum>();
+      this.daemon.getNestedEnums(this.request, enums);
+      this.daemon.getNestedEnums(this.response, enums);
+      this._nestedEnums = Array.from(enums.values());
+    }
+    return this._nestedEnums;
   }
 
   get streamingDirection() {
@@ -63,11 +82,19 @@ export class Method {
   }
 
   get hasRestMethods() {
-    return this.restMappings.length > 0;
+    return !!this.restMapping;
+  }
+
+  get restMethod() {
+    return this.restMapping?.method || '';
+  }
+
+  get restPath() {
+    return this.restMapping?.path || '';
   }
 
   constructor(json: JsonMethod, daemon: Daemon) {
-    log(`Creating method ${json.name}`);
+    log(`Parsing method ${json.name}`);
     this.name = json.name;
     this.parseDescription(json.description);
     this.source = json.source;
@@ -89,8 +116,8 @@ export class Method {
     this.responseStreaming = json.responseStreaming;
     this.daemon = daemon;
 
-    if (json.restMappings) {
-      this.restMappings = json.restMappings.map((m) => new RestMapping(m));
+    if (json.restMappings?.length > 0) {
+      this.restMapping = new RestMapping(json.restMappings[0]);
     }
   }
 
@@ -112,11 +139,6 @@ export class Method {
     const filePath = path.join(servicePath, `${snakeCase(this.name)}.mdx`);
     log(`Exporting ${this.name} to ${filePath}`);
 
-    // const partials = {
-    //   message: templates.message,
-    //   request_message: templates.request_message,
-    // };
-    // const content = Mustache.render(templates.method, this, partials);
     const content = Handlebars.compile(templates.method)(this, {
       allowProtoPropertiesByDefault: true,
     });

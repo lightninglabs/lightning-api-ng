@@ -10,3 +10,19 @@
 .collapsible:hover {
   opacity: 0.8;
 }
+
+.description p {
+  margin-bottom: 10px;
+}
+
+.description h4 {
+  margin-top: 10px;
+}
+
+.deprecated {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.85rem;
+  background-color: var(--ifm-color-danger-contrast-background);
+  padding: 2px 8px;
+}
