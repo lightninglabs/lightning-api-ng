@@ -113,4 +113,12 @@ export interface JsonProtoFile {
 export interface JsonDaemon {
   files: JsonProtoFile[];
   restTypes: JsonRestTypes;
+  repoURL: string;
+  commit: string;
+  protoSrcDir: string;
+  experimentalPackages: string[];
+  grpcPort: number;
+  restPort: number;
+  cliCmd: string;
+  daemonCmd: string;
 }
