@@ -9,7 +9,7 @@ const config = {
   title: 'Lightning API Docs',
   tagline: 'Dinosaurs are cool',
   url: 'https://api-docs.lightning.engineering/',
-  baseUrl: '/api-docs-site/',
+  baseUrl: '/api-docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
@@ -36,7 +36,8 @@ const config = {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/lightninglabs/api-docs-site/edit/main/',
+          editUrl:
+            'https://github.com/lightninglabs/lightning-api-ng/edit/main/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -80,7 +81,13 @@ const config = {
             label: 'Faraday',
           },
           {
-            href: 'https://github.com/lightninglabs/api-docs-site',
+            type: 'doc',
+            docId: 'api/taro/index',
+            position: 'left',
+            label: 'Taro',
+          },
+          {
+            href: 'https://github.com/lightninglabs/lightning-api-ng',
             label: 'GitHub',
             position: 'right',
           },
@@ -93,8 +100,24 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Lightning API Docs',
-                to: '/docs/lnd',
+                label: 'LND',
+                to: 'docs/api/lnd',
+              },
+              {
+                label: 'Loop',
+                to: 'docs/api/loop',
+              },
+              {
+                label: 'Pool',
+                to: 'docs/api/pool',
+              },
+              {
+                label: 'Faraday',
+                to: 'docs/api/faraday',
+              },
+              {
+                label: 'Taro',
+                to: 'docs/api/taro',
               },
             ],
           },
@@ -111,7 +134,7 @@ const config = {
               },
               {
                 label: 'Twitter',
-                href: 'https://twitter.com/api-docs-site',
+                href: 'https://twitter.com/lightning',
               },
             ],
           },
@@ -124,7 +147,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/lightninglabs/api-docs-site',
+                href: 'https://github.com/lightninglabs/lightning-api-ng',
               },
             ],
           },

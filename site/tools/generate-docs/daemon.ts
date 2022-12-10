@@ -1,24 +1,57 @@
 import fs from 'fs-extra';
+import Handlebars from 'handlebars';
 import path from 'path';
 import { OUTPUT_DIR } from './constants';
 import Enum from './enum';
 import { Message } from './message';
 import { Package } from './package';
 import { RestTypes } from './rest-types';
+import { templates } from './templates';
 import { JsonDaemon } from './types';
+import { camelCase } from './utils';
 
 const { log } = console;
+
+interface FileRepoUrl {
+  name: string;
+  grpcUrl: string;
+  restUrl: string;
+}
+
+interface ExperimentalService {
+  name: string;
+  lowerName: string;
+  file: string;
+}
 
 export class Daemon {
   name: string;
   packages = new Map<string, Package>();
   restTypes: RestTypes;
 
+  repoURL: string;
+  commit: string;
+  protoSrcDir: string;
+  experimentalPackages: string[];
+  grpcPort: number;
+  restPort: number;
+  cliCmd: string;
+  daemonCmd: string;
+
+  fileRepoUrls: FileRepoUrl[] = [];
+
   constructor(daemonName: string, json: JsonDaemon) {
     log(`Creating daemon ${daemonName} with ${json.files.length} proto files`);
     this.name = daemonName;
-
     this.restTypes = new RestTypes(json.restTypes);
+    this.repoURL = json.repoURL;
+    this.commit = json.commit;
+    this.protoSrcDir = json.protoSrcDir;
+    this.experimentalPackages = json.experimentalPackages;
+    this.grpcPort = json.grpcPort;
+    this.restPort = json.restPort;
+    this.cliCmd = json.cliCmd;
+    this.daemonCmd = json.daemonCmd;
 
     json.files.forEach((f) => {
       let pkg = this.packages.get(f.package);
@@ -27,12 +60,44 @@ export class Daemon {
         this.packages.set(f.package, pkg);
       }
       pkg.addProtoFile(f, this);
+
+      if (this.experimentalPackages.includes(pkg.name)) {
+        pkg.experimental = true;
+      }
+
+      // add the file name and repo url
+      const { repoURL, commit, protoSrcDir } = this;
+      const baseName = f.name.replace(/\.proto$/g, '');
+      this.fileRepoUrls.push({
+        name: baseName,
+        grpcUrl: `${repoURL}/blob/${commit}/${protoSrcDir}/${baseName}.proto`,
+        restUrl: `${repoURL}/blob/${commit}/${protoSrcDir}/${baseName}.swagger.json`,
+      });
     });
+    this.fileRepoUrls = this.fileRepoUrls.sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
   }
 
   get camelName() {
     if (this.name === 'lnd') return 'LND';
-    return this.name[0].toUpperCase() + this.name.substring(1);
+    return camelCase(this.name);
+  }
+
+  get experimentalServices() {
+    const services: ExperimentalService[] = [];
+    this.packages.forEach((pkg) => {
+      if (pkg.experimental) {
+        pkg.services.forEach((s) => {
+          services.push({
+            name: s.name,
+            lowerName: s.name.toLowerCase(),
+            file: pkg.fileName,
+          });
+        });
+      }
+    });
+    return services.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   getMessage(fullType: string, throwError = true) {
@@ -137,7 +202,17 @@ export class Daemon {
 
     this.packages.forEach((f) => f.exportMarkdown(this.name));
 
+    // load the header for the daemon
+    let content = templates.loadDaemonContent(this.name);
+    if (!content) {
+      content = `# ${this.camelName}`;
+    } else {
+      content = Handlebars.compile(content)(this, {
+        allowProtoPropertiesByDefault: true,
+      });
+    }
+
     const indexFilePath = path.join(OUTPUT_DIR, this.name, 'index.md');
-    fs.writeFileSync(indexFilePath, `# ${this.camelName} API`);
+    fs.writeFileSync(indexFilePath, content);
   }
 }

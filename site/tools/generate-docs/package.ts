@@ -8,10 +8,12 @@ const { log } = console;
 
 export class Package {
   name: string;
+  fileName: string;
   description: string;
   messages = new Map<string, Message>();
   enums = new Map<string, Enum>();
   services: Service[] = [];
+  experimental = false;
 
   constructor(name: string) {
     log(`Creating package ${name}`);
@@ -21,6 +23,7 @@ export class Package {
   addProtoFile(json: JsonProtoFile, daemon: Daemon) {
     log(`Adding proto file ${json.name} to package ${json.package}`);
     this.name = json.package;
+    this.fileName = json.name;
     this.description = json.description;
 
     log(`Adding ${json.messages.length} messages in ${json.package}`);

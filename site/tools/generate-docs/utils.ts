@@ -6,6 +6,9 @@ export const snakeCase = (s: string) =>
     .join('-')
     .toLowerCase();
 
+export const camelCase = (s: string) =>
+  s ? s[0].toUpperCase() + s.substring(1) : s;
+
 export const writeCategoryJson = (
   filePath: string,
   label: string,
