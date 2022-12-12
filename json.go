@@ -13,11 +13,21 @@ import (
 type Template struct {
 	// The files that were parsed
 	Files []*File `json:"files"`
+
 	// Details about the scalar values and their respective types in
 	// supported languages.
 	Scalars []*ScalarValue `json:"scalarValueTypes"`
 
 	RESTTypes map[string]interface{} `json:"restTypes"`
+
+	RepoURL              string   `json:"repoURL"`
+	Commit               string   `json:"commit"`
+	ProtoSrcDir          string   `json:"protoSrcDir"`
+	ExperimentalPackages []string `json:"experimentalPackages"`
+	GrpcPort             uint16   `json:"grpcPort"`
+	RESTPort             uint16   `json:"restPort"`
+	CliCmd               string   `json:"cliCmd"`
+	DaemonCli            string   `json:"daemonCmd"`
 }
 
 // File wraps all the relevant parsed info about a proto file. File objects

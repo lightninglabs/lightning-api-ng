@@ -38,7 +38,8 @@ function compile() {
     --doc_out=json,generated.json:. $proto_files
   popd
   
-  ./merger $COMPONENT "$REPO_URL" "$PROTO_SRC_DIR" "$COMMIT"
+  export REPO_URL COMMIT PROTO_SRC_DIR EXPERIMENTAL_PACKAGES GRPC_PORT REST_PORT COMMAND DAEMON
+  ./merger $COMPONENT
 }
 
 # Generic options.
@@ -66,6 +67,7 @@ REPO_URL="https://github.com/${LND_FORK}/lnd"
 CHECKOUT_COMMIT=$LND_COMMIT
 COMPONENT=lnd
 COMMAND=lncli
+DAEMON=lnd
 PROTO_SRC_DIR=lnrpc
 EXCLUDE_PROTOS="none"
 EXPERIMENTAL_PACKAGES="autopilotrpc signrpc walletrpc chainrpc invoicesrpc watchtowerrpc neutrinorpc monitoring peersrpc kvdb_postgres kvdb_etcd"
@@ -82,6 +84,7 @@ REPO_URL="https://github.com/${LOOP_FORK}/loop"
 CHECKOUT_COMMIT=$LOOP_COMMIT
 COMPONENT=loop
 COMMAND=loop
+DAEMON=loopd
 PROTO_SRC_DIR=""
 EXCLUDE_PROTOS="server.proto -not -name common.proto"
 EXPERIMENTAL_PACKAGES=""
@@ -98,6 +101,7 @@ REPO_URL="https://github.com/${FARADAY_FORK}/faraday"
 CHECKOUT_COMMIT=$FARADAY_COMMIT
 COMPONENT=faraday
 COMMAND=frcli
+DAEMON=faraday
 PROTO_SRC_DIR=frdrpc
 EXCLUDE_PROTOS="none"
 EXPERIMENTAL_PACKAGES=""
@@ -114,6 +118,7 @@ REPO_URL="https://github.com/${POOL_FORK}/pool"
 CHECKOUT_COMMIT=$POOL_COMMIT
 COMPONENT=pool
 COMMAND=pool
+DAEMON=poold
 PROTO_SRC_DIR=""
 EXCLUDE_PROTOS="none"
 EXCLUDE_SERVICES="ChannelAuctioneer"
@@ -131,6 +136,7 @@ REPO_URL="https://github.com/${TARO_FORK}/taro"
 CHECKOUT_COMMIT=$TARO_COMMIT
 COMPONENT=taro
 COMMAND=tarocli
+DAEMON=tarod
 PROTO_SRC_DIR=""
 EXCLUDE_PROTOS="none"
 EXCLUDE_SERVICES=""
@@ -139,3 +145,4 @@ INSTALL_CMD="make install"
 APPEND_TO_FILE=source/taro.html.md
 GRPC_PORT=10029
 REST_PORT=8089
+compile

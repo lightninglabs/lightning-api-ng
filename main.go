@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"google.golang.org/genproto/googleapis/api/annotations"
@@ -21,9 +22,6 @@ var (
 
 func main() {
 	app := os.Args[1]
-	repoURL := os.Args[2]
-	protoSrcDir := os.Args[3]
-	srcCommit := os.Args[4]
 	mainFile := fmt.Sprintf("./build/protos/%s/generated.json", app)
 	template := &Template{}
 	fmt.Printf("Reading template file %s\n", mainFile)
@@ -39,9 +37,13 @@ func main() {
 
 	fmt.Printf("Got template with %d files\n", len(template.Files))
 	template.RESTTypes = make(map[string]interface{})
+	if err := fetchEnvVars(template); err != nil {
+		fail(err)
+	}
 
-	// If the proto source dir is not empty, make sure we can use
-	// it directly by appending a tailing path separator.
+	// If the proto source dir is not empty, make sure we can use it
+	// directly by appending a tailing path separator.
+	protoSrcDir := template.ProtoSrcDir
 	if protoSrcDir != "" {
 		protoSrcDir = fmt.Sprintf("%s/", protoSrcDir)
 	}
@@ -57,8 +59,8 @@ func main() {
 			"./build/%s/%s%s", app, protoSrcDir, file.Name,
 		)
 		externalLink := fmt.Sprintf(
-			"%s/blob/%s/%s%s", repoURL, srcCommit, protoSrcDir,
-			file.Name,
+			"%s/blob/%s/%s%s", template.RepoURL, template.Commit,
+			protoSrcDir, file.Name,
 		)
 		fmt.Printf("Reading proto file %s with external link %s\n",
 			protoFile, externalLink)
@@ -164,6 +166,29 @@ func main() {
 func fail(err error) {
 	fmt.Printf("Error: %v\n", err)
 	os.Exit(1)
+}
+
+func fetchEnvVars(template *Template) error {
+	template.RepoURL = os.Getenv("REPO_URL")
+	template.Commit = os.Getenv("COMMIT")
+	template.ProtoSrcDir = os.Getenv("PROTO_SRC_DIR")
+	template.ExperimentalPackages = strings.Split(
+		os.Getenv("EXPERIMENTAL_PACKAGES"), " ",
+	)
+	port, err := strconv.ParseUint(os.Getenv("GRPC_PORT"), 10, 16)
+	if err != nil {
+		return err
+	}
+	template.GrpcPort = uint16(port)
+	port, err = strconv.ParseUint(os.Getenv("REST_PORT"), 10, 16)
+	if err != nil {
+		return err
+	}
+	template.RESTPort = uint16(port)
+	template.CliCmd = os.Getenv("COMMAND")
+	template.DaemonCli = os.Getenv("DAEMON")
+
+	return nil
 }
 
 func assignSourceLinks(method *ServiceMethod, source, baseLink string) {
