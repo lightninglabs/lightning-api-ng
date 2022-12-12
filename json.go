@@ -13,11 +13,21 @@ import (
 type Template struct {
 	// The files that were parsed
 	Files []*File `json:"files"`
+
 	// Details about the scalar values and their respective types in
 	// supported languages.
 	Scalars []*ScalarValue `json:"scalarValueTypes"`
 
 	RESTTypes map[string]interface{} `json:"restTypes"`
+
+	RepoURL              string   `json:"repoURL"`
+	Commit               string   `json:"commit"`
+	ProtoSrcDir          string   `json:"protoSrcDir"`
+	ExperimentalPackages []string `json:"experimentalPackages"`
+	GrpcPort             uint16   `json:"grpcPort"`
+	RESTPort             uint16   `json:"restPort"`
+	CliCmd               string   `json:"cliCmd"`
+	DaemonCli            string   `json:"daemonCmd"`
 }
 
 // File wraps all the relevant parsed info about a proto file. File objects
@@ -59,17 +69,22 @@ type Service struct {
 
 // ServiceMethod contains details about an individual method within a service.
 type ServiceMethod struct {
-	Name              string         `json:"name"`
-	Description       string         `json:"description"`
-	RequestType       string         `json:"requestType"`
-	RequestLongType   string         `json:"requestLongType"`
-	RequestFullType   string         `json:"requestFullType"`
-	RequestStreaming  bool           `json:"requestStreaming"`
-	ResponseType      string         `json:"responseType"`
-	ResponseLongType  string         `json:"responseLongType"`
-	ResponseFullType  string         `json:"responseFullType"`
-	ResponseStreaming bool           `json:"responseStreaming"`
-	RESTMappings      []*RESTMapping `json:"restMappings"`
+	Name               string         `json:"name"`
+	Description        string         `json:"description"`
+	Source             string         `json:"source"`
+	CommandLine        string         `json:"commandLine"`
+	CommandLineHelp    string         `json:"commandLineHelp"`
+	RequestType        string         `json:"requestType"`
+	RequestLongType    string         `json:"requestLongType"`
+	RequestFullType    string         `json:"requestFullType"`
+	RequestTypeSource  string         `json:"requestTypeSource"`
+	RequestStreaming   bool           `json:"requestStreaming"`
+	ResponseType       string         `json:"responseType"`
+	ResponseLongType   string         `json:"responseLongType"`
+	ResponseFullType   string         `json:"responseFullType"`
+	ResponseTypeSource string         `json:"responseTypeSource"`
+	ResponseStreaming  bool           `json:"responseStreaming"`
+	RESTMappings       []*RESTMapping `json:"restMappings"`
 
 	Options map[string]interface{} `json:"options,omitempty"`
 }
