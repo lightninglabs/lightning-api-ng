@@ -62,6 +62,8 @@ type ServiceMethod struct {
 	Name               string         `json:"name"`
 	Description        string         `json:"description"`
 	Source             string         `json:"source"`
+	CommandLine        string         `json:"commandLine"`
+	CommandLineHelp    string         `json:"commandLineHelp"`
 	RequestType        string         `json:"requestType"`
 	RequestLongType    string         `json:"requestLongType"`
 	RequestFullType    string         `json:"requestFullType"`

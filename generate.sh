@@ -66,7 +66,7 @@ COMPONENT=lnd
 COMMAND=lncli
 PROTO_SRC_DIR=lnrpc
 EXCLUDE_PROTOS="none"
-EXPERIMENTAL_PACKAGES="signrpc walletrpc chainrpc invoicesrpc watchtowerrpc"
+EXPERIMENTAL_PACKAGES="autopilotrpc signrpc walletrpc chainrpc invoicesrpc watchtowerrpc neutrinorpc monitoring peersrpc kvdb_postgres kvdb_etcd"
 INSTALL_CMD="make clean && make install tags=\"$EXPERIMENTAL_PACKAGES\""
 APPEND_TO_FILE=source/lnd.html.md
 GRPC_PORT=10009

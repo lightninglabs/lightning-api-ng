@@ -4,11 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
+	"regexp"
 	"strings"
 
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v3"
+)
+
+var (
+	// subCommandPattern is the pattern that matches against the CLI sub
+	// command indication in a gRPC method's comment.
+	subCommandPattern = regexp.MustCompile("(.*?): `(.*?)`")
 )
 
 func main() {
@@ -59,11 +67,22 @@ func main() {
 			fail(err)
 		}
 
-		fmt.Printf("Generating source file lookup links\n")
-		assignSourceLinks(
-			template.Files[idx].Services, string(protoSourceBytes),
-			externalLink,
-		)
+		fmt.Printf("Generating source file lookup links and CLI help " +
+			"texts\n")
+		for sIdx := range file.Services {
+			for mIdx := range file.Services[sIdx].Methods {
+				method := file.Services[sIdx].Methods[mIdx]
+				assignSourceLinks(
+					method, string(protoSourceBytes),
+					externalLink,
+				)
+
+				err := parseMethodDescription(method)
+				if err != nil {
+					fail(err)
+				}
+			}
+		}
 
 		restFile := fmt.Sprintf(
 			"./build/protos/%s/%s.swagger.json", app, baseName,
@@ -147,7 +166,7 @@ func fail(err error) {
 	os.Exit(1)
 }
 
-func assignSourceLinks(services []*Service, source, baseLink string) {
+func assignSourceLinks(method *ServiceMethod, source, baseLink string) {
 	lines := strings.Split(strings.ReplaceAll(source, "\r\n", "\n"), "\n")
 
 	lineSuffix := func(needle string) string {
@@ -163,31 +182,43 @@ func assignSourceLinks(services []*Service, source, baseLink string) {
 		return ""
 	}
 
-	for serviceIdx := range services {
-		for methodIdx := range services[serviceIdx].Methods {
-			method := services[serviceIdx].Methods[methodIdx]
+	// Find the method definition in the proto file.
+	suffix := lineSuffix(fmt.Sprintf("rpc %s", method.Name))
+	method.Source = fmt.Sprintf("%s%s", baseLink, suffix)
 
-			// Find the method definition in the proto file.
-			suffix := lineSuffix(fmt.Sprintf("rpc %s", method.Name))
-			method.Source = fmt.Sprintf("%s%s", baseLink, suffix)
+	// Find the request type in the proto file.
+	suffix = lineSuffix(fmt.Sprintf("message %s", method.RequestType))
+	method.RequestTypeSource = fmt.Sprintf("%s%s", baseLink, suffix)
 
-			// Find the request type in the proto file.
-			suffix = lineSuffix(
-				fmt.Sprintf("message %s", method.RequestType),
-			)
-			method.RequestTypeSource = fmt.Sprintf(
-				"%s%s", baseLink, suffix,
-			)
+	// Find the response type in the proto file.
+	suffix = lineSuffix(fmt.Sprintf("message %s", method.ResponseType))
+	method.ResponseTypeSource = fmt.Sprintf("%s%s", baseLink, suffix)
+}
 
-			// Find the response type in the proto file.
-			suffix = lineSuffix(
-				fmt.Sprintf("message %s", method.ResponseType),
-			)
-			method.ResponseTypeSource = fmt.Sprintf(
-				"%s%s", baseLink, suffix,
-			)
+func parseMethodDescription(method *ServiceMethod) error {
+	description := method.Description
+	if subCommandPattern.MatchString(description) {
+		matches := subCommandPattern.FindStringSubmatch(description)
+
+		// At index 0 we have the full matched string, capture groups
+		// start at index 1.
+		method.CommandLine = fmt.Sprintf(
+			"%s %s", matches[1], matches[2],
+		)
+
+		// Run the command and capture its output.
+		args := append(strings.Split(matches[2], " "), "--help")
+		cmd := exec.Command(matches[1], args...)
+		out, err := cmd.Output()
+		if err != nil {
+			return fmt.Errorf("error invoking %s: %w",
+				method.CommandLine, err)
 		}
+
+		method.CommandLineHelp = string(out)
 	}
+
+	return nil
 }
 
 func loadGrpcAPIServiceFromYAML(yamlFileContents []byte,
