@@ -59,17 +59,20 @@ type Service struct {
 
 // ServiceMethod contains details about an individual method within a service.
 type ServiceMethod struct {
-	Name              string         `json:"name"`
-	Description       string         `json:"description"`
-	RequestType       string         `json:"requestType"`
-	RequestLongType   string         `json:"requestLongType"`
-	RequestFullType   string         `json:"requestFullType"`
-	RequestStreaming  bool           `json:"requestStreaming"`
-	ResponseType      string         `json:"responseType"`
-	ResponseLongType  string         `json:"responseLongType"`
-	ResponseFullType  string         `json:"responseFullType"`
-	ResponseStreaming bool           `json:"responseStreaming"`
-	RESTMappings      []*RESTMapping `json:"restMappings"`
+	Name               string         `json:"name"`
+	Description        string         `json:"description"`
+	Source             string         `json:"source"`
+	RequestType        string         `json:"requestType"`
+	RequestLongType    string         `json:"requestLongType"`
+	RequestFullType    string         `json:"requestFullType"`
+	RequestTypeSource  string         `json:"requestTypeSource"`
+	RequestStreaming   bool           `json:"requestStreaming"`
+	ResponseType       string         `json:"responseType"`
+	ResponseLongType   string         `json:"responseLongType"`
+	ResponseFullType   string         `json:"responseFullType"`
+	ResponseTypeSource string         `json:"responseTypeSource"`
+	ResponseStreaming  bool           `json:"responseStreaming"`
+	RESTMappings       []*RESTMapping `json:"restMappings"`
 
 	Options map[string]interface{} `json:"options,omitempty"`
 }

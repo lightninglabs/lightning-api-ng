@@ -38,7 +38,7 @@ function compile() {
     --doc_out=json,generated.json:. $proto_files
   popd
   
-  ./merger $COMPONENT
+  ./merger $COMPONENT "$REPO_URL" "$PROTO_SRC_DIR" "$COMMIT"
 }
 
 # Generic options.
