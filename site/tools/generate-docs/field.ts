@@ -26,6 +26,17 @@ export default class Field {
     }
   }
 
+  get encodingTip() {
+    if (this.type === 'bytes') {
+      if (this.restPlacement === 'query') {
+        return '<Tip>Use base64 & URL encoding.<br /> See [REST Encoding](../#rest-encoding).</Tip>';
+      }
+      if (this.restPlacement === 'body') {
+        return '<Tip>Use base64 encoding.<br /> See [REST Encoding](../#rest-encoding).</Tip>';
+      }
+    }
+  }
+
   constructor(json: JsonField) {
     this.name = json.name;
     this.description = json.description
