@@ -7,6 +7,8 @@ import { JsonProtoFile } from './types';
 const { log } = console;
 
 export class Package {
+  daemon: Daemon;
+
   name: string;
   fileName: string;
   description: string;
@@ -15,12 +17,13 @@ export class Package {
   services: Service[] = [];
   experimental = false;
 
-  constructor(name: string) {
+  constructor(name: string, daemon: Daemon) {
     log(`Creating package ${name}`);
+    this.daemon = daemon;
     this.name = name;
   }
 
-  addProtoFile(json: JsonProtoFile, daemon: Daemon) {
+  addProtoFile(json: JsonProtoFile) {
     log(`Adding proto file ${json.name} to package ${json.package}`);
     this.name = json.package;
     this.fileName = json.name;
@@ -28,18 +31,14 @@ export class Package {
 
     log(`Adding ${json.messages.length} messages in ${json.package}`);
     json.messages.forEach((m) =>
-      this.messages.set(m.longName, new Message(m, this.name))
+      this.messages.set(m.longName, new Message(m, this))
     );
 
     log(`Adding ${json.enums.length} enums in ${json.package}`);
-    json.enums.forEach((e) =>
-      this.enums.set(e.longName, new Enum(e, this.name))
-    );
+    json.enums.forEach((e) => this.enums.set(e.longName, new Enum(e, this)));
 
     log(`Adding ${json.services.length} services in ${json.package}`);
-    json.services.forEach((s) =>
-      this.services.push(new Service(s, this.name, daemon))
-    );
+    json.services.forEach((s) => this.services.push(new Service(s, this)));
   }
 
   exportMarkdown(daemonName: string) {

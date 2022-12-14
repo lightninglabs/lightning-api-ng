@@ -56,10 +56,10 @@ export class Daemon {
     json.files.forEach((f) => {
       let pkg = this.packages.get(f.package);
       if (!pkg) {
-        pkg = new Package(f.package);
+        pkg = new Package(f.package, this);
         this.packages.set(f.package, pkg);
       }
-      pkg.addProtoFile(f, this);
+      pkg.addProtoFile(f);
 
       if (this.experimentalPackages.includes(pkg.name)) {
         pkg.experimental = true;
