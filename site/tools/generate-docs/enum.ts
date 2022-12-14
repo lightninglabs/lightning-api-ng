@@ -1,9 +1,11 @@
+import { Package } from './package';
 import { JsonEnum } from './types';
 
 const { log } = console;
 
 export default class Enum {
-  protoFile: string;
+  package: Package;
+
   name: string;
   longName: string;
   fullName: string;
@@ -14,9 +16,9 @@ export default class Enum {
     description: string;
   }[];
 
-  constructor(json: JsonEnum, protoFile: string) {
+  constructor(json: JsonEnum, pkg: Package) {
     log(`Creating enum ${json.name} with ${json.values.length} values`);
-    this.protoFile = protoFile;
+    this.package = pkg;
     this.name = json.name;
     this.longName = json.longName;
     this.fullName = json.fullName;

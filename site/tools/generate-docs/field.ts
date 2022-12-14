@@ -1,6 +1,9 @@
+import { Message } from './message';
 import { JsonField } from './types';
 
 export default class Field {
+  message: Message;
+
   name: string;
   description: string;
   label: string;
@@ -27,17 +30,24 @@ export default class Field {
   }
 
   get encodingTip() {
+    let encoding: string;
     if (this.type === 'bytes') {
-      if (this.restPlacement === 'query') {
-        return '<Tip>Use base64 & URL encoding.<br /> See [REST Encoding](../#rest-encoding).</Tip>';
-      }
-      if (this.restPlacement === 'body') {
-        return '<Tip>Use base64 encoding.<br /> See [REST Encoding](../#rest-encoding).</Tip>';
+      if (this.restPlacement === 'query') encoding = 'base64 & URL';
+      if (this.restPlacement === 'body') encoding = 'base64';
+      if (encoding) {
+        return [
+          '<Tip>',
+          `Use ${encoding} encoding in the ${this.restPlacement}.`,
+          '<br />',
+          `See [REST Encoding](/docs/api/${this.message.package.daemon.name}/#rest-encoding).`,
+          '</Tip>',
+        ].join('');
       }
     }
   }
 
-  constructor(json: JsonField) {
+  constructor(json: JsonField, message: Message) {
+    this.message = message;
     this.name = json.name;
     this.description = json.description
       .replace(/\n/g, ' ') // replace newlines with spaces

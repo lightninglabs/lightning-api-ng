@@ -1,16 +1,17 @@
 import path from 'path';
 import { CATEGORY_FILE, OUTPUT_DIR } from './constants';
-import { Daemon } from './daemon';
 import { Method } from './method';
+import { Package } from './package';
 import { JsonService } from './types';
 import { snakeCase, writeCategoryJson } from './utils';
 
 const { log } = console;
 
 export class Service {
+  package: Package;
+
   name: string;
   description: string;
-  protoFile: string;
   methods: Method[];
 
   get hasRestMethods() {
@@ -28,12 +29,12 @@ export class Service {
     };
   }
 
-  constructor(json: JsonService, protoFile: string, daemon: Daemon) {
+  constructor(json: JsonService, pkg: Package) {
     log(`Creating service ${json.name} with ${json.methods.length} methods`);
+    this.package = pkg;
     this.name = json.name;
     this.description = json.description;
-    this.protoFile = protoFile;
-    this.methods = json.methods.map((m) => new Method(m, daemon));
+    this.methods = json.methods.map((m) => new Method(m, this));
   }
 
   exportMarkdown(daemonName: string) {

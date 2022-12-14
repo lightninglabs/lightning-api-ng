@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
-import { Daemon } from './daemon';
 import Enum from './enum';
 import { Message } from './message';
 import { RestMapping } from './rest-mapping';
+import { Service } from './service';
 import { templates } from './templates';
 import { JsonMethod } from './types';
 import { snakeCase } from './utils';
@@ -12,6 +12,8 @@ import { snakeCase } from './utils';
 const { log } = console;
 
 export class Method {
+  service: Service;
+
   name: string;
   description: string;
   source: string;
@@ -27,8 +29,6 @@ export class Method {
   responseStreaming: boolean;
   restMapping?: RestMapping;
 
-  daemon: Daemon;
-
   // private fields used to avoid redundant computation in getters
   private _request?: Message;
   private _response?: Message;
@@ -37,7 +37,9 @@ export class Method {
 
   get request() {
     if (!this._request) {
-      this._request = this.daemon.getMessage(this.requestFullType);
+      this._request = this.service.package.daemon.getMessage(
+        this.requestFullType
+      );
       this.restMapping?.updateMessage(this._request);
     }
     return this._request;
@@ -45,7 +47,9 @@ export class Method {
 
   get response() {
     if (!this._response) {
-      this._response = this.daemon.getMessage(this.responseFullType);
+      this._response = this.service.package.daemon.getMessage(
+        this.responseFullType
+      );
     }
     return this._response;
   }
@@ -53,8 +57,8 @@ export class Method {
   get nestedMessages() {
     if (!this._nestedMessages) {
       const messages = new Map<string, Message>();
-      this.daemon.getNestedMessages(this.request, messages);
-      this.daemon.getNestedMessages(this.response, messages);
+      this.service.package.daemon.getNestedMessages(this.request, messages);
+      this.service.package.daemon.getNestedMessages(this.response, messages);
       this._nestedMessages = Array.from(messages.values());
     }
     return this._nestedMessages;
@@ -63,8 +67,8 @@ export class Method {
   get nestedEnums() {
     if (!this._nestedEnums) {
       const enums = new Map<string, Enum>();
-      this.daemon.getNestedEnums(this.request, enums);
-      this.daemon.getNestedEnums(this.response, enums);
+      this.service.package.daemon.getNestedEnums(this.request, enums);
+      this.service.package.daemon.getNestedEnums(this.response, enums);
       this._nestedEnums = Array.from(enums.values());
     }
     return this._nestedEnums;
@@ -93,8 +97,9 @@ export class Method {
     return this.restMapping?.path || '';
   }
 
-  constructor(json: JsonMethod, daemon: Daemon) {
+  constructor(json: JsonMethod, service: Service) {
     log(`Parsing method ${json.name}`);
+    this.service = service;
     this.name = json.name;
     this.parseDescription(json.description);
     this.source = json.source;
@@ -114,7 +119,6 @@ export class Method {
     this.responseType = json.responseType;
     this.responseFullType = json.responseFullType;
     this.responseStreaming = json.responseStreaming;
-    this.daemon = daemon;
 
     if (json.restMappings?.length > 0) {
       this.restMapping = new RestMapping(json.restMappings[0]);
