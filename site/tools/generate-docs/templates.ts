@@ -30,6 +30,10 @@ class Templates {
    * The template for daemon summary docs
    */
   daemons_shared: string;
+  /**
+   * The template for the the code tabs
+   */
+  code_tabs: string;
 
   loadTemplate(fileName: string) {
     const filePath = path.join(TEMPLATES_DIR, `${fileName}.md`);
@@ -50,11 +54,13 @@ class Templates {
     this.request_message = this.loadTemplate('request_message');
     this.enumeration = this.loadTemplate('enum');
     this.daemons_shared = this.loadTemplate('daemons/shared');
+    this.code_tabs = this.loadTemplate('code/tabs');
 
     Handlebars.registerPartial('partial_message', this.message);
     Handlebars.registerPartial('partial_request_message', this.request_message);
     Handlebars.registerPartial('partial_enum', this.enumeration);
     Handlebars.registerPartial('partial_daemons_shared', this.daemons_shared);
+    Handlebars.registerPartial('partial_code_tabs', this.code_tabs);
 
     Handlebars.registerHelper('upper', (value) => value?.toUpperCase());
     Handlebars.registerHelper('lower', (value) => value?.toLowerCase());

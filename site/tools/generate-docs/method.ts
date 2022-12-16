@@ -113,12 +113,6 @@ export class Method {
     this.responseFullType = json.responseFullType;
     this.responseTypeSource = json.responseTypeSource;
     this.responseStreaming = json.responseStreaming;
-    this.requestType = json.requestType;
-    this.requestFullType = json.requestFullType;
-    this.requestStreaming = json.requestStreaming;
-    this.responseType = json.responseType;
-    this.responseFullType = json.responseFullType;
-    this.responseStreaming = json.responseStreaming;
 
     if (json.restMappings?.length > 0) {
       this.restMapping = new RestMapping(json.restMappings[0]);
