@@ -8,7 +8,7 @@ import { Package } from './package';
 import { RestTypes } from './rest-types';
 import { templates } from './templates';
 import { JsonDaemon } from './types';
-import { camelCase } from './utils';
+import { pascalCase } from './utils';
 
 const { log } = console;
 
@@ -79,9 +79,9 @@ export class Daemon {
     );
   }
 
-  get camelName() {
+  get pascalName() {
     if (this.name === 'lnd') return 'LND';
-    return camelCase(this.name);
+    return pascalCase(this.name);
   }
 
   get experimentalServices() {
@@ -198,14 +198,14 @@ export class Daemon {
   }
 
   exportMarkdown() {
-    log(`Exporting daemon ${this.camelName}`);
+    log(`Exporting daemon ${this.pascalName}`);
 
     this.packages.forEach((f) => f.exportMarkdown(this.name));
 
     // load the header for the daemon
     let content = templates.loadDaemonContent(this.name);
     if (!content) {
-      content = `# ${this.camelName}`;
+      content = `# ${this.pascalName}`;
     } else {
       content = Handlebars.compile(content)(this, {
         allowProtoPropertiesByDefault: true,

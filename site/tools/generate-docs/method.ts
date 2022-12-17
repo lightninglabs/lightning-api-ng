@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
+import CodeSamples from './code';
 import Enum from './enum';
 import { Message } from './message';
 import { RestMapping } from './rest-mapping';
@@ -28,6 +29,7 @@ export class Method {
   responseTypeSource: string;
   responseStreaming: boolean;
   restMapping?: RestMapping;
+  code: CodeSamples;
 
   // private fields used to avoid redundant computation in getters
   private _request?: Message;
@@ -117,6 +119,8 @@ export class Method {
     if (json.restMappings?.length > 0) {
       this.restMapping = new RestMapping(json.restMappings[0]);
     }
+
+    this.code = new CodeSamples(this);
   }
 
   parseDescription(description: string) {
