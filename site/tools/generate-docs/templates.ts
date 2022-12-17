@@ -1,7 +1,7 @@
 import fs from 'fs';
 import Handlebars from 'handlebars';
 import path from 'path';
-import { camelCase, snakeCase } from './utils';
+import { camelCase, pascalCase, snakeCase } from './utils';
 
 const TEMPLATES_DIR = path.join('tools', 'templates');
 
@@ -34,6 +34,10 @@ class Templates {
    * The template for the the code tabs
    */
   code_tabs: string;
+  /**
+   * The template for gRPC Javascript code samples
+   */
+  code_grpc_js: string;
 
   loadTemplate(fileName: string) {
     const filePath = path.join(TEMPLATES_DIR, `${fileName}.md`);
@@ -55,17 +59,20 @@ class Templates {
     this.enumeration = this.loadTemplate('enum');
     this.daemons_shared = this.loadTemplate('daemons/shared');
     this.code_tabs = this.loadTemplate('code/tabs');
+    this.code_grpc_js = this.loadTemplate('code/grpc/js');
 
     Handlebars.registerPartial('partial_message', this.message);
     Handlebars.registerPartial('partial_request_message', this.request_message);
     Handlebars.registerPartial('partial_enum', this.enumeration);
     Handlebars.registerPartial('partial_daemons_shared', this.daemons_shared);
     Handlebars.registerPartial('partial_code_tabs', this.code_tabs);
+    Handlebars.registerPartial('partial_code_grpc_js', this.code_grpc_js);
 
     Handlebars.registerHelper('upper', (value) => value?.toUpperCase());
     Handlebars.registerHelper('lower', (value) => value?.toLowerCase());
     Handlebars.registerHelper('camel', (value) => camelCase(value));
     Handlebars.registerHelper('snake', (value) => snakeCase(value));
+    Handlebars.registerHelper('pascal', (value) => pascalCase(value));
   }
 }
 

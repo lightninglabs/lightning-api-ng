@@ -11,7 +11,7 @@ instance through gRPC.
 The code samples assume that the there is a local `{{daemonCmd}}` instance
 running and listening for gRPC connections on port `{{grpcPort}}`. `{{upper name}}_DIR` will be used
 as a placeholder to denote the base directory of the `{{daemonCmd}}` instance. By default,
-this is `~/.{{lower name}}` on Linux and `~/Library/Application Support/{{camel name}}` on macOS.
+this is `~/.{{lower name}}` on Linux and `~/Library/Application Support/{{pascal name}}` on macOS.
 
 At the time of writing this documentation, two things are needed in order to
 make a gRPC request to an `{{daemonCmd}}` instance: a TLS/SSL connection and a macaroon
@@ -30,7 +30,7 @@ can be found here:
 The code samples assume that the there is a local `{{daemonCmd}}` instance
 running and listening for REST connections on port `{{restPort}}`. `{{upper name}}_DIR` will be used
 as a placeholder to denote the base directory of the `{{daemonCmd}}` instance. By default,
-this is `~/.{{lower name}}` on Linux and `~/Library/Application Support/{{camel name}}` on macOS.
+this is `~/.{{lower name}}` on Linux and `~/Library/Application Support/{{pascal name}}` on macOS.
 
 At the time of writing this documentation, two things are needed in order to
 make an HTTP request to an `{{daemonCmd}}` instance: a TLS/SSL connection and a macaroon

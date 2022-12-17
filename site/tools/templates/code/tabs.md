@@ -11,17 +11,19 @@
 </TabItem>
 <TabItem value="js" label="Javascript">
 
-```js
-// TODO: JS Sample gRPC Code
-```
+{{> partial_code_grpc_js}}
 
 </TabItem>
 <TabItem value="bash" label="Shell">
 
 ```bash
-$ {{commandLine}} --help
+{{#if method.commandLine}}
+$ {{method.commandLine}} --help
 
-{{commandLineHelp}}
+{{method.commandLineHelp}}
+{{else}}
+# There is no CLI command for this RPC
+{{/if}}
 ```
 
 </TabItem>
@@ -62,16 +64,20 @@ $ {{commandLine}} --help
 <TabItem value="js" label="Javascript">
 
 ```js
-// TODO: JS Sample REST Code
+// TODO: JS Sample gRPC Code
 ```
 
 </TabItem>
 <TabItem value="bash" label="Shell">
 
 ```bash
-$ {{commandLine}} --help
+{{#if method.commandLine}}
+$ {{method.commandLine}} --help
 
-{{commandLineHelp}}
+{{method.commandLineHelp}}
+{{else}}
+# There is no CLI command for this RPC
+{{/if}}
 ```
 
 </TabItem>

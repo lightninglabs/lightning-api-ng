@@ -28,7 +28,9 @@ rpc {{name}} ({{#if requestStreaming}}stream {{/if}}{{requestType}}) returns ({{
 
 ## Code Samples
 
+{{#with code}}
 {{> partial_code_tabs}}
+{{/with}}
 
 ## Messages
 
