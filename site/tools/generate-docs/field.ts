@@ -29,20 +29,22 @@ export default class Field {
     }
   }
 
-  get encodingTip() {
-    let encoding: string;
+  get encoding() {
     if (this.type === 'bytes') {
-      if (this.restPlacement === 'query') encoding = 'base64 & URL';
-      if (this.restPlacement === 'body') encoding = 'base64';
-      if (encoding) {
-        return [
-          '<Tip>',
-          `Use ${encoding} encoding in the ${this.restPlacement}.`,
-          '<br />',
-          `See [REST Encoding](/docs/api/${this.message.package.daemon.name}/#rest-encoding).`,
-          '</Tip>',
-        ].join('');
-      }
+      if (this.restPlacement === 'query') return 'base64 & URL';
+      if (this.restPlacement === 'body') return 'base64';
+    }
+  }
+
+  get encodingTip() {
+    if (this.encoding) {
+      return [
+        '<Tip>',
+        `Use ${this.encoding} encoding in the ${this.restPlacement}.`,
+        '<br />',
+        `See [REST Encoding](/docs/api/${this.message.package.daemon.name}/#rest-encoding).`,
+        '</Tip>',
+      ].join('');
     }
   }
 

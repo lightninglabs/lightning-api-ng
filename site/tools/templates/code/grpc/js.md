@@ -15,7 +15,7 @@ process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
 const tlsCert = fs.readFileSync('{{upper daemonName}}_DIR/tls.cert');
 const sslCreds = grpc.credentials.createSsl(tlsCert);
 {{#if requiresMacaroon}}
-const macaroon = fs.readFileSync("{{upper daemonName}}_DIR/data/chain/bitcoin/regtest/{{macaroonName}}.macaroon").toString('hex');
+const macaroon = fs.readFileSync('{{macaroonPath}}').toString('hex');
 const macaroonCreds = grpc.credentials.createFromMetadataGenerator(function(args, callback) {
   let metadata = new grpc.Metadata();
   metadata.add('macaroon', macaroon);

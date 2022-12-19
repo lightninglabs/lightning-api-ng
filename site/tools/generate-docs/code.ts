@@ -35,16 +35,25 @@ export default class CodeSamples {
     }
   }
 
-  get macaroonName() {
-    return this.daemonName === 'lnd' ? 'admin' : this.daemonName;
+  get macaroonPath() {
+    return this.daemonName === 'lnd'
+      ? `LND_DIR/data/chain/bitcoin/regtest/admin.macaroon`
+      : `${this.daemonName.toUpperCase()}_DIR/regtest/${
+          this.daemonName
+        }.macaroon`;
   }
 
   get requiresMacaroon() {
-    return this.serviceName !== 'WalletUnlocker';
+    const anonServices = ['lnrpc.WalletUnlocker', 'lnrpc.State'];
+    return !anonServices.includes(`${this.packageName}.${this.serviceName}`);
   }
 
   get grpcPort() {
     return this.method.service.package.daemon.grpcPort;
+  }
+
+  get restPort() {
+    return this.method.service.package.daemon.restPort;
   }
 
   get requestFields() {
@@ -69,5 +78,13 @@ export default class CodeSamples {
 
   get isBidirectionalStreaming() {
     return this.method.streamingDirection === 'bidirectional';
+  }
+
+  get isStreaming() {
+    return !this.isUnary;
+  }
+
+  get isRestPost() {
+    return this.method.restMethod === 'POST';
   }
 }
