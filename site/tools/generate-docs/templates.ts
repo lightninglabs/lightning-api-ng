@@ -38,6 +38,10 @@ class Templates {
    * The template for gRPC Javascript code samples
    */
   code_grpc_js: string;
+  /**
+   * The template for REST Javascript code samples
+   */
+  code_rest_js: string;
 
   loadTemplate(fileName: string) {
     const filePath = path.join(TEMPLATES_DIR, `${fileName}.md`);
@@ -60,6 +64,7 @@ class Templates {
     this.daemons_shared = this.loadTemplate('daemons/shared');
     this.code_tabs = this.loadTemplate('code/tabs');
     this.code_grpc_js = this.loadTemplate('code/grpc/js');
+    this.code_rest_js = this.loadTemplate('code/rest/js');
 
     Handlebars.registerPartial('partial_message', this.message);
     Handlebars.registerPartial('partial_request_message', this.request_message);
@@ -67,6 +72,7 @@ class Templates {
     Handlebars.registerPartial('partial_daemons_shared', this.daemons_shared);
     Handlebars.registerPartial('partial_code_tabs', this.code_tabs);
     Handlebars.registerPartial('partial_code_grpc_js', this.code_grpc_js);
+    Handlebars.registerPartial('partial_code_rest_js', this.code_rest_js);
 
     Handlebars.registerHelper('upper', (value) => value?.toUpperCase());
     Handlebars.registerHelper('lower', (value) => value?.toLowerCase());
