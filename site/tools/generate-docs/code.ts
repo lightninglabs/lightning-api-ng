@@ -25,13 +25,13 @@ export default class CodeSamples {
   }
 
   get loaderFiles() {
-    const pkg = this.method.service.package;
-    if (pkg.daemon.name === 'lnd') {
-      return pkg.fileName === 'lightning.proto'
+    const fileName = this.method.service.fileName;
+    if (this.method.service.package.daemon.name === 'lnd') {
+      return fileName === 'lightning.proto'
         ? `'lightning.proto'`
-        : `['lightning.proto', '${pkg.fileName}']`;
+        : `['lightning.proto', '${fileName}']`;
     } else {
-      return `'${pkg.fileName}'`;
+      return `'${fileName}'`;
     }
   }
 

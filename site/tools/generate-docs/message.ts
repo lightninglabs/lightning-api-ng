@@ -6,6 +6,7 @@ const { log } = console;
 
 export class Message {
   package: Package;
+  fileName: string;
 
   name: string;
   longName: string;
@@ -17,9 +18,10 @@ export class Message {
     return this.fields.length > 0;
   }
 
-  constructor(json: JsonMessage, pkg: Package) {
+  constructor(json: JsonMessage, pkg: Package, fileName: string) {
     log(`Creating message ${json.name} with ${json.fields.length} fields`);
     this.package = pkg;
+    this.fileName = fileName;
     this.name = json.name;
     this.longName = json.longName;
     this.fullName = json.fullName;

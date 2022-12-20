@@ -5,6 +5,7 @@ const { log } = console;
 
 export default class Enum {
   package: Package;
+  fileName: string;
 
   name: string;
   longName: string;
@@ -16,9 +17,10 @@ export default class Enum {
     description: string;
   }[];
 
-  constructor(json: JsonEnum, pkg: Package) {
+  constructor(json: JsonEnum, pkg: Package, fileName: string) {
     log(`Creating enum ${json.name} with ${json.values.length} values`);
     this.package = pkg;
+    this.fileName = fileName;
     this.name = json.name;
     this.longName = json.longName;
     this.fullName = json.fullName;

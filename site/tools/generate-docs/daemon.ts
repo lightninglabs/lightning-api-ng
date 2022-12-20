@@ -92,7 +92,7 @@ export class Daemon {
           services.push({
             name: s.name,
             lowerName: s.name.toLowerCase(),
-            file: pkg.fileName,
+            file: s.fileName,
           });
         });
       }

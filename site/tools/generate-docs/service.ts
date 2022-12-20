@@ -9,6 +9,7 @@ const { log } = console;
 
 export class Service {
   package: Package;
+  fileName: string;
 
   name: string;
   description: string;
@@ -29,9 +30,10 @@ export class Service {
     };
   }
 
-  constructor(json: JsonService, pkg: Package) {
+  constructor(json: JsonService, pkg: Package, fileName: string) {
     log(`Creating service ${json.name} with ${json.methods.length} methods`);
     this.package = pkg;
+    this.fileName = fileName;
     this.name = json.name;
     this.description = json.description;
     this.methods = json.methods.map((m) => new Method(m, this));
