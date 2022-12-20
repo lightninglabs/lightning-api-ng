@@ -1,0 +1,351 @@
+---
+sidebar_position: 3
+---
+
+# UnlockWallet
+
+lncli: `unlock`
+
+UnlockWallet is used at startup of lnd to provide a password to unlock the wallet database.
+
+## gRPC
+
+```
+rpc UnlockWallet (UnlockWalletRequest) returns (UnlockWalletResponse);
+```
+
+### UnlockWalletRequest
+
+| Field                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Type                                                       |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| <MessageField name="wallet_password">wallet_password should be the current valid passphrase for the daemon. This will be required to decrypt on-disk material that the daemon requires to function properly. When using REST, this field must be encoded as base64.</MessageField>                                                                                                                                                                                                                             | `bytes`                                                    |
+| <MessageField name="recovery_window">recovery_window is an optional argument specifying the address lookahead when restoring a wallet seed. The recovery window applies to each individual branch of the BIP44 derivation paths. Supplying a recovery window of zero indicates that no addresses should be recovered, such after the first initialization of the wallet.</MessageField>                                                                                                                        | `int32`                                                    |
+| <MessageField name="channel_backups">channel_backups is an optional argument that allows clients to recover the settled funds within a set of channels. This should be populated if the user was unable to close out all channels and sweep funds before partial or total data loss occurred. If specified, then after on-chain recovery of funds, lnd begin to carry out the data loss recovery protocol in order to recover the funds in each channel from a remote force closed transaction.</MessageField> | [`ChanBackupSnapshot`](./grpc-messages#chanbackupsnapshot) |
+| <MessageField name="stateless_init">stateless_init is an optional argument instructing the daemon NOT to create any \*.macaroon files in its file system.</MessageField>                                                                                                                                                                                                                                                                                                                                       | `bool`                                                     |
+
+### UnlockWalletResponse
+
+:::note
+
+This response has no parameters.
+
+:::
+
+### Code Samples
+
+<Tabs groupId="code-samples">
+<TabItem value="js" label="Javascript">
+
+
+```js
+const fs = require('fs');
+const grpc = require('@grpc/grpc-js');
+const protoLoader = require('@grpc/proto-loader');
+const loaderOptions = {
+  keepCase: true,
+  longs: String,
+  enums: String,
+  defaults: true,
+  oneofs: true
+};
+const packageDefinition = protoLoader.loadSync(['lightning.proto', 'walletunlocker.proto'], loaderOptions);
+const lnrpc = grpc.loadPackageDefinition(packageDefinition).lnrpc;
+const macaroon = fs.readFileSync("LND_DIR/data/chain/bitcoin/simnet/admin.macaroon").toString('hex');
+process.env.GRPC_SSL_CIPHER_SUITES = 'HIGH+ECDSA';
+const lndCert = fs.readFileSync('LND_DIR/tls.cert');
+const sslCreds = grpc.credentials.createSsl(lndCert);
+const walletUnlocker = new lnrpc.WalletUnlocker('localhost:10009', sslCreds);
+let request = {
+  wallet_password: <bytes>,
+  recovery_window: <int32>,
+    channel_backups: {
+      single_chan_backups: {
+        chan_backups: [
+          {
+            chan_point: {
+              funding_txid_bytes: <byte>,
+              funding_txid_str: <string>,
+              output_index: <uint32>,
+            },
+            chan_backup: <byte>
+          },
+        ],
+      },
+      multi_chan_backup: {
+        chan_points:[
+          {
+              funding_txid_bytes: <byte>,
+              funding_txid_str: <string>,
+              output_index: <uint32>,
+            }
+        ],
+        multi_chan_backup: <byte>,
+      }
+    },
+  stateless_init: <bool>,
+};
+walletUnlocker.unlockWallet(request, function(err, response) {
+  console.log(response);
+});
+// Console output:
+//  {
+//  }
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+
+```py
+>>> import codecs, grpc, os
+>>> # Generate the following 2 modules by compiling the lnrpc/walletunlocker.proto with the grpcio-tools.
+>>> # See https://github.com/lightningnetwork/lnd/blob/master/docs/grpc/python.md for instructions.
+>>> import walletunlocker_pb2 as lnrpc, walletunlocker_pb2_grpc as walletunlockerstub
+>>> os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
+>>> cert = open('LND_DIR/tls.cert', 'rb').read()
+>>> ssl_creds = grpc.ssl_channel_credentials(cert)
+>>> channel = grpc.secure_channel('localhost:10009', ssl_creds)
+>>> stub = walletunlockerstub.WalletUnlockerStub(channel)
+>>> request = lnrpc.UnlockWalletRequest(
+        'wallet_password'=<bytes>,
+        'recovery_window'=<int32>,
+        'channel_backups': {
+          'single_chan_backups': {
+            'chan_backups': [
+              {
+                'chan_point': {
+                  'funding_txid_bytes': <byte>,
+                  'funding_txid_str': <string>,
+                  'output_index': <uint32>,
+                },
+                'chan_backup': <byte>
+              },
+            ],
+          },
+          'multi_chan_backup': {
+            'chan_points':[
+              {
+                  'funding_txid_bytes': <byte>,
+                  'funding_txid_str': <string>,
+                  'output_index': <uint32>,
+                }
+            ],
+            'multi_chan_backup': <byte>,
+          }
+        },
+        'stateless_init'=<bool>,
+    )
+>>> response = stub.UnlockWallet(request)
+>>> print(response)
+{
+}
+```
+
+</TabItem>
+<TabItem value="bash" label="Shell">
+
+
+```bash
+# The unlock command is used to decrypt lnd's wallet state in order to
+# start up. This command MUST be run after booting up lnd before it's
+# able to carry out its duties. An exception is if a user is running with
+# --noseedbackup, then a default passphrase will be used.
+# If the --stateless_init flag is set, no macaroon files are created by
+# the daemon. This should be set for every unlock if the daemon was
+# initially initialized stateless. Otherwise the daemon will create
+# unencrypted macaroon files which could leak information to the system
+# that the daemon runs on.
+
+$ lncli unlock [command options] [arguments...]
+
+# --recovery_window value  address lookahead to resume recovery rescan, value should be non-zero --  To recover all funds, this should be greater than the maximum number of consecutive, unused addresses ever generated by the wallet. (default: 0)
+# --stdin                  read password from standard input instead of prompting for it. THIS IS CONSIDERED TO BE DANGEROUS if the password is located in a file that can be read by another user. This flag should only be used in combination with some sort of password manager or secrets vault.
+# --stateless_init         do not create any macaroon files in the file system of the daemon
+```
+
+</TabItem>
+<TabItem value="go" label="Go">
+
+
+```
+// TODO: Go Sample Code
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+
+```
+// TODO: Java Sample Code
+```
+
+</TabItem>
+<TabItem value="csharp" label="C#">
+
+
+```
+// TODO: C# Sample Code
+```
+
+</TabItem>
+</Tabs>
+
+
+## REST
+
+| HTTP Method       | Path               |
+| ----------------- | ------------------ |
+| <Pill>POST</Pill> | `/v1/unlockwallet` |
+
+### lnrpcUnlockWalletRequest
+
+| Field                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Type      | Format                                                               | Placement |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | -------------------------------------------------------------------- | --------- |
+| <MessageField name="channel_backups">channel_backups is an optional argument that allows clients to recover the settled funds within a set of channels. This should be populated if the user was unable to close out all channels and sweep funds before partial or total data loss occurred. If specified, then after on-chain recovery of funds, lnd begin to carry out the data loss recovery protocol in order to recover the funds in each channel from a remote force closed transaction.</MessageField> | `object`  | [`lnrpcChanBackupSnapshot`](./rest-messages#lnrpcchanbackupsnapshot) | body      |
+| <MessageField name="recovery_window">recovery_window is an optional argument specifying the address lookahead when restoring a wallet seed. The recovery window applies to each individual branch of the BIP44 derivation paths. Supplying a recovery window of zero indicates that no addresses should be recovered, such after the first initialization of the wallet.</MessageField>                                                                                                                        | `integer` | `int32`                                                              | body      |
+| <MessageField name="stateless_init">stateless_init is an optional argument instructing the daemon NOT to create any \*.macaroon files in its file system.</MessageField>                                                                                                                                                                                                                                                                                                                                       | `boolean` | `boolean`                                                            | body      |
+| <MessageField name="wallet_password">wallet_password should be the current valid passphrase for the daemon. This will be required to decrypt on-disk material that the daemon requires to function properly. When using REST, this field must be encoded as base64.</MessageField>                                                                                                                                                                                                                             | `byte`    | `string`                                                             | body      |
+
+### lnrpcUnlockWalletResponse
+
+:::note
+
+This response has no parameters.
+
+:::
+
+### Code Samples
+
+<Tabs groupId="code-samples">
+<TabItem value="js" label="Javascript">
+
+
+```js
+const fs = require('fs');
+const request = require('request');
+let requestBody = {
+    wallet_password: <byte>,
+    recovery_window: <int32>,
+    channel_backups: {
+      single_chan_backups: {
+        chan_backups: [
+          {
+            chan_point: {
+              funding_txid_bytes: <byte>,
+              funding_txid_str: <string>,
+              output_index: <uint32>,
+            },
+            chan_backup: <byte>
+          },
+        ],
+      },
+      multi_chan_backup: {
+        chan_points:[
+          {
+              funding_txid_bytes: <byte>,
+              funding_txid_str: <string>,
+              output_index: <uint32>,
+            }
+        ],
+        multi_chan_backup: <byte>,
+      }
+    },
+    stateless_init: <boolean>,
+}
+let options = {
+  url: 'https://localhost:8080/v1/unlockwallet',
+  // Work-around for self-signed certificates.
+  rejectUnauthorized: false,
+  json: true,
+  form: JSON.stringify(requestBody),
+}
+request.post(options, function(error, response, body) {
+  console.log(body);
+});
+// Console output:
+//  {
+//  }
+```
+
+</TabItem>
+<TabItem value="py" label="Python">
+
+
+```py
+>>> import base64, codecs, json, requests
+>>> url = 'https://localhost:8080/v1/unlockwallet'
+>>> cert_path = 'LND_DIR/tls.cert'
+>>> data = {
+        'wallet_password': base64.b64encode(<byte>).decode(),
+        'recovery_window': <int32>, 1
+        'channel_backups': {
+          'single_chan_backups': {
+            'chan_backups': [
+              {
+                'chan_point': {
+                  'funding_txid_bytes': <byte>,
+                  'funding_txid_str': <string>,
+                  'output_index': <uint32>,
+                },
+                'chan_backup': <byte>
+              },
+            ],
+          },
+          'multi_chan_backup': {
+            'chan_points':[
+              {
+                  'funding_txid_bytes': <byte>,
+                  'funding_txid_str': <string>,
+                  'output_index': <uint32>,
+                }
+            ],
+            'multi_chan_backup': <byte>,
+          }
+        },
+        'stateless_init': <boolean>,
+    }
+>>> r = requests.post(url, verify=cert_path, data=json.dumps(data))
+>>> print(r.json())
+{
+}
+```
+
+</TabItem>
+<TabItem value="bash" label="Shell">
+
+
+```bash
+$ MACAROON_HEADER="Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000 $LND_DIR/data/chain/bitcoin/simnet/admin.macaroon)"
+$ curl -X POST --cacert $LND_DIR/tls.cert --header "$MACAROON_HEADER" https://localhost:8080/v1/unlockwallet  \
+    -d '{ "wallet_password":<byte>,"recovery_window":<int32>,"channel_backups":<lnrpcChanBackupSnapshot>,"stateless_init":<boolean>, }'
+{
+}
+```
+
+</TabItem>
+<TabItem value="go" label="Go">
+
+
+```
+// TODO: Go Sample Code
+```
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+
+```
+// TODO: Java Sample Code
+```
+
+</TabItem>
+<TabItem value="csharp" label="C#">
+
+
+```
+// TODO: C# Sample Code
+```
+
+</TabItem>
+</Tabs>
+
