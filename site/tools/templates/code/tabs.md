@@ -12,27 +12,6 @@
 {{> partial_code_grpc_py}}
 
 </TabItem>
-<TabItem value="go" label="Go">
-
-```
-# TODO: Go Sample gRPC Code
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```
-// TODO: Java Sample gRPC Code
-```
-
-</TabItem>
-<TabItem value="csharp" label="C#">
-
-```
-// TODO: C# Sample gRPC Code
-```
-
-</TabItem>
 </Tabs>
 
 </TabItem>
@@ -46,30 +25,7 @@
 </TabItem>
 <TabItem value="py" label="Python">
 
-```py
-# TODO: Python Sample REST Code
-```
-
-</TabItem>
-<TabItem value="go" label="Go">
-
-```
-// TODO: Go Sample REST Code
-```
-
-</TabItem>
-<TabItem value="java" label="Java">
-
-```
-// TODO: Java Sample REST Code
-```
-
-</TabItem>
-<TabItem value="csharp" label="C#">
-
-```
-// TODO: C# Sample REST Code
-```
+{{> partial_code_rest_py}}
 
 </TabItem>
 </Tabs>

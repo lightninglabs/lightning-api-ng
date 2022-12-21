@@ -103,4 +103,12 @@ export default class CodeSamples {
   get stubFileName() {
     return path.basename(this.protoFileName, '.proto');
   }
+
+  get pythonRestArgs() {
+    const args: string[] = [];
+    if (this.requiresMacaroon) args.push('headers=headers, ');
+    if (this.method.responseStreaming) args.push('stream=True, ');
+    if (this.isRestPost) args.push('data=json.dumps(data), ');
+    return args.join('');
+  }
 }
