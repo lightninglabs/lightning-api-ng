@@ -9,9 +9,7 @@
 </TabItem>
 <TabItem value="py" label="Python">
 
-```py
-# TODO: Python Sample gRPC Code
-```
+{{> partial_code_grpc_py}}
 
 </TabItem>
 <TabItem value="go" label="Go">

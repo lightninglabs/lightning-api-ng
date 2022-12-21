@@ -42,6 +42,10 @@ class Templates {
    * The template for REST Javascript code samples
    */
   code_rest_js: string;
+  /**
+   * The template for gRPC Python code samples
+   */
+  code_grpc_py: string;
 
   loadTemplate(fileName: string) {
     const filePath = path.join(TEMPLATES_DIR, `${fileName}.md`);
@@ -65,6 +69,7 @@ class Templates {
     this.code_tabs = this.loadTemplate('code/tabs');
     this.code_grpc_js = this.loadTemplate('code/grpc/js');
     this.code_rest_js = this.loadTemplate('code/rest/js');
+    this.code_grpc_py = this.loadTemplate('code/grpc/py');
 
     Handlebars.registerPartial('partial_message', this.message);
     Handlebars.registerPartial('partial_request_message', this.request_message);
@@ -73,6 +78,7 @@ class Templates {
     Handlebars.registerPartial('partial_code_tabs', this.code_tabs);
     Handlebars.registerPartial('partial_code_grpc_js', this.code_grpc_js);
     Handlebars.registerPartial('partial_code_rest_js', this.code_rest_js);
+    Handlebars.registerPartial('partial_code_grpc_py', this.code_grpc_py);
 
     Handlebars.registerHelper('upper', (value) => value?.toUpperCase());
     Handlebars.registerHelper('lower', (value) => value?.toLowerCase());

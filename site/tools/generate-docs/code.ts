@@ -1,3 +1,4 @@
+import path from 'path';
 import { Method } from './method';
 
 /**
@@ -24,14 +25,17 @@ export default class CodeSamples {
     return this.method.service.name;
   }
 
+  get methodName() {
+    return this.method.name;
+  }
+
   get loaderFiles() {
-    const fileName = this.method.service.fileName;
     if (this.method.service.package.daemon.name === 'lnd') {
-      return fileName === 'lightning.proto'
+      return this.protoFileName === 'lightning.proto'
         ? `'lightning.proto'`
-        : `['lightning.proto', '${fileName}']`;
+        : `['lightning.proto', '${this.protoFileName}']`;
     } else {
-      return `'${fileName}'`;
+      return `'${this.protoFileName}'`;
     }
   }
 
@@ -54,6 +58,10 @@ export default class CodeSamples {
 
   get restPort() {
     return this.method.service.package.daemon.restPort;
+  }
+
+  get requestName() {
+    return this.method.request.name;
   }
 
   get requestFields() {
@@ -86,5 +94,13 @@ export default class CodeSamples {
 
   get isRestPost() {
     return this.method.restMethod === 'POST';
+  }
+
+  get protoFileName() {
+    return this.method.service.fileName;
+  }
+
+  get stubFileName() {
+    return path.basename(this.protoFileName, '.proto');
   }
 }
