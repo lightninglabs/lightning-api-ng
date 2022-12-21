@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Pool
 
 Welcome to the API reference documentation for Lightning Pool.
@@ -21,5 +25,9 @@ The service can be used in various situations:
 - Bootstrapping new services to Lightning
 - Demand fueled routing node channel selection
 - Allowing users to instantly receive with a wallet
+
+## Usage
+
+Learn how to install, configure, and use Pool by viewing the documentation in the [Builder's Guide](https://docs.lightning.engineering/lightning-network-tools/pool/overview).
 
 {{> partial_daemons_shared summary=true}}

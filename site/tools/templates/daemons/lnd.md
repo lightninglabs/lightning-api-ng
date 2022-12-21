@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # LND
 
 Welcome to the API reference documentation for LND, the Lightning Network
@@ -21,6 +25,10 @@ within it. In the current state `lnd` is capable of:
   through the network.
 - Updating advertised fee schedules.
 - Automatic channel management ([`autopilot`](https://github.com/lightningnetwork/lnd/tree/master/autopilot)).
+
+## Usage
+
+Learn how to install, configure, and use LND by viewing the documentation in the [Builder's Guide](https://docs.lightning.engineering/lightning-network-tools/lnd/run-lnd).
 
 ## Summary
 

@@ -15,6 +15,7 @@
 </Tabs>
 
 </TabItem>
+{{#if method.restPath}}
 <TabItem value="rest" label="REST">
 
 <Tabs groupId="code-samples">
@@ -31,6 +32,7 @@
 </Tabs>
 
 </TabItem>
+{{/if}}
 <TabItem value="bash" label="Shell">
 
 ```bash

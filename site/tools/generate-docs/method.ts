@@ -88,7 +88,7 @@ export class Method {
   }
 
   get hasRestMethods() {
-    return !!this.restMapping;
+    return !!this.restMapping?.path;
   }
 
   get restMethod() {
@@ -97,6 +97,10 @@ export class Method {
 
   get restPath() {
     return this.restMapping?.path || '';
+  }
+
+  get isDeprecated() {
+    return this.description?.toLowerCase().includes('deprecated');
   }
 
   constructor(json: JsonMethod, service: Service) {

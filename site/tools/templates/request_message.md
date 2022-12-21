@@ -2,6 +2,14 @@
 
 ### {{fullName}}
 
+{{#if source}}
+<small>
+
+Source: [{{fileName}}]({{source}})
+
+</small>
+
+{{/if}}
 {{#if fields}}
 | Field | gRPC Type | REST Type | REST Placement |
 | ----- | --------- | --------- | -------------- |

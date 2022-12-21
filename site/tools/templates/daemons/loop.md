@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Loop
 
 Welcome to the API reference documentation for Lightning Loop.
@@ -22,5 +26,9 @@ The service can be used in various situations:
   funds in channels required
 - As a failsafe payment method that can be used when channel liquidity along a
   route is insufficient
+
+## Usage
+
+Learn how to install, configure, and use Loop by viewing the documentation in the [Builder's Guide](https://docs.lightning.engineering/lightning-network-tools/loop/get-started).
 
 {{> partial_daemons_shared summary=true}}

@@ -1,6 +1,22 @@
 # {{name}}
 
+{{#if isDeprecated}}
+:::danger
+
+This RPC is deprecated and will be removed in a future version.
+
+:::
+{{/if}}
+
 {{{description}}}
+
+{{#if source}}
+<small>
+
+Source: [{{service.fileName}}]({{source}})
+
+</small>
+{{/if}}
 
 ### gRPC
 
@@ -35,11 +51,11 @@ rpc {{name}} ({{#if requestStreaming}}stream {{/if}}{{requestType}}) returns ({{
 ## Messages
 
 {{#request}}
-{{> partial_request_message}}
+{{> partial_request_message source=../requestTypeSource}}
 {{/request}}
 
 {{#response}}
-{{> partial_message}}
+{{> partial_message source=../responseTypeSource}}
 {{/response}}
 
 {{#if nestedMessages}}

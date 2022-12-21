@@ -100,7 +100,7 @@ export class RestMapping {
     // create an array of unique placements
     const placements = params
       .map((p) => p.in)
-      .filter((pIn, all) => pIn !== all[0]);
+      .filter((pIn, i, all) => all.indexOf(pIn) === i);
     return placements.length > 1 ? 'mixed' : placements[0];
   }
 }

@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # Taro
 
 Welcome to the API reference documentation for Taro.
@@ -10,5 +14,9 @@ Features:
 - Send and receive assets
 - Export and import Taro proofs
 - Create and manage profiles
+
+## Usage
+
+Learn how to install, configure, and use Taro by viewing the documentation in the [Builder's Guide](https://docs.lightning.engineering/lightning-network-tools/taro/get-taro).
 
 {{> partial_daemons_shared summary=true}}
