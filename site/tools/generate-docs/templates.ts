@@ -27,6 +27,10 @@ class Templates {
    */
   enumeration: string;
   /**
+   * The template for all rest endpoints
+   */
+  rest_endpoints: string;
+  /**
    * The template for daemon summary docs
    */
   daemons_shared: string;
@@ -69,6 +73,7 @@ class Templates {
     this.message = this.loadTemplate('message');
     this.request_message = this.loadTemplate('request_message');
     this.enumeration = this.loadTemplate('enum');
+    this.rest_endpoints = this.loadTemplate('rest_endpoints');
     this.daemons_shared = this.loadTemplate('daemons/shared');
     this.code_tabs = this.loadTemplate('code/tabs');
     this.code_grpc_js = this.loadTemplate('code/grpc/js');
@@ -79,6 +84,7 @@ class Templates {
     Handlebars.registerPartial('partial_message', this.message);
     Handlebars.registerPartial('partial_request_message', this.request_message);
     Handlebars.registerPartial('partial_enum', this.enumeration);
+    Handlebars.registerPartial('partial_rest_endpoints', this.rest_endpoints);
     Handlebars.registerPartial('partial_daemons_shared', this.daemons_shared);
     Handlebars.registerPartial('partial_code_tabs', this.code_tabs);
     Handlebars.registerPartial('partial_code_grpc_js', this.code_grpc_js);

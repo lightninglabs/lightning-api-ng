@@ -27,6 +27,8 @@ can be found here:
 
 ## REST
 
+View a listing of all REST URLs on the [REST Endpoints](rest-endpoints) page. 
+
 The code samples assume that the there is a local `{{daemonCmd}}` instance
 running and listening for REST connections on port `{{restPort}}`. `{{upper name}}_DIR` will be used
 as a placeholder to denote the base directory of the `{{daemonCmd}}` instance. By default,

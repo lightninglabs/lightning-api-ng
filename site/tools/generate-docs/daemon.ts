@@ -8,7 +8,7 @@ import { Package } from './package';
 import { RestTypes } from './rest-types';
 import { templates } from './templates';
 import { JsonDaemon } from './types';
-import { pascalCase } from './utils';
+import { pascalCase, snakeCase } from './utils';
 
 const { log } = console;
 
@@ -22,6 +22,13 @@ interface ExperimentalService {
   name: string;
   lowerName: string;
   file: string;
+}
+
+interface RestEndpoint {
+  restPath: string;
+  restMethod: string;
+  linkUrl: string;
+  methodName: string;
 }
 
 export class Daemon {
@@ -98,6 +105,25 @@ export class Daemon {
       }
     });
     return services.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  get restEndpoints() {
+    const endpoints: RestEndpoint[] = [];
+    this.packages.forEach((pkg) => {
+      pkg.services.forEach((service) => {
+        service.methods.forEach((method) => {
+          if (method.restMapping?.path) {
+            endpoints.push({
+              restPath: method.restMapping.path,
+              restMethod: method.restMapping.method,
+              linkUrl: `${snakeCase(service.name)}/${snakeCase(method.name)}`,
+              methodName: `${pkg.name}.${method.name}`,
+            });
+          }
+        });
+      });
+    });
+    return endpoints.sort((a, b) => a.restPath.localeCompare(b.restPath));
   }
 
   getMessage(fullType: string, throwError = true) {
@@ -201,6 +227,20 @@ export class Daemon {
     log(`Exporting daemon ${this.pascalName}`);
 
     this.packages.forEach((f) => f.exportMarkdown(this.name));
+
+    // export a doc with the list of all rest paths
+    const endpointsContent = Handlebars.compile(templates.rest_endpoints)(
+      this,
+      {
+        allowProtoPropertiesByDefault: true,
+      }
+    );
+    const endpointsFilePath = path.join(
+      OUTPUT_DIR,
+      this.name,
+      'rest-endpoints.md'
+    );
+    fs.writeFileSync(endpointsFilePath, endpointsContent);
 
     // load the header for the daemon
     let content = templates.loadDaemonContent(this.name);
