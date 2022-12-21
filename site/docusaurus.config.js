@@ -3,21 +3,17 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const buildConfig = require('./build.config.json');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Lightning API Docs',
+  title: buildConfig.title,
   tagline: 'Dinosaurs are cool',
-  url: 'https://api-docs.lightning.engineering/',
-  baseUrl: '/api-docs/',
+  url: buildConfig.url,
+  baseUrl: buildConfig.baseUrl,
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
-
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'lightninglabs', // Usually your GitHub org/user name.
-  projectName: 'api-docs-site', // Usually your repo name.
+  favicon: 'img/favicon-32x32.png',
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -33,12 +29,14 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/lightninglabs/lightning-api-ng/edit/main/',
         },
+        blog: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -50,45 +48,21 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'Lightning API Docs',
+        title: buildConfig.title,
         logo: {
-          alt: 'Lightning API Docs Logo',
-          src: 'img/logo.svg',
+          alt: 'Lightning Labs Logo',
+          src: 'img/icon-48x48.png',
         },
         items: [
-          {
+          ...buildConfig.repos.map((label) => ({
             type: 'doc',
-            docId: 'api/lnd/index',
+            docId: `api/${label.toLowerCase()}/index`,
             position: 'left',
-            label: 'LND',
-          },
+            label,
+          })),
           {
-            type: 'doc',
-            docId: 'api/loop/index',
-            position: 'left',
-            label: 'Loop',
-          },
-          {
-            type: 'doc',
-            docId: 'api/pool/index',
-            position: 'left',
-            label: 'Pool',
-          },
-          {
-            type: 'doc',
-            docId: 'api/faraday/index',
-            position: 'left',
-            label: 'Faraday',
-          },
-          {
-            type: 'doc',
-            docId: 'api/taro/index',
-            position: 'left',
-            label: 'Taro',
-          },
-          {
-            href: 'https://github.com/lightninglabs/lightning-api-ng',
-            label: 'GitHub',
+            href: 'https://github.com/lightninglabs/lightning-api-ng/issues',
+            label: 'Feedback',
             position: 'right',
           },
         ],
@@ -99,34 +73,18 @@ const config = {
           {
             title: 'Docs',
             items: [
-              {
-                label: 'LND',
-                to: 'docs/api/lnd',
-              },
-              {
-                label: 'Loop',
-                to: 'docs/api/loop',
-              },
-              {
-                label: 'Pool',
-                to: 'docs/api/pool',
-              },
-              {
-                label: 'Faraday',
-                to: 'docs/api/faraday',
-              },
-              {
-                label: 'Taro',
-                to: 'docs/api/taro',
-              },
+              ...buildConfig.repos.map((label) => ({
+                label,
+                to: `api/${label.toLowerCase()}`,
+              })),
             ],
           },
           {
             title: 'Community',
             items: [
               {
-                label: 'Stack Overflow',
-                href: 'https://stackoverflow.com/questions/tagged/lightning',
+                label: "Builder's Guide",
+                href: 'https://docs.lightning.engineering',
               },
               {
                 label: 'Slack',
@@ -139,20 +97,19 @@ const config = {
             ],
           },
           {
-            title: 'More',
-            items: [
-              {
-                label: 'Blog',
-                to: 'https://lightning.engineering/blog',
-              },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/lightninglabs/lightning-api-ng',
-              },
-            ],
+            title: 'Github',
+            items: buildConfig.repos.map((label) => {
+              const repoName = label.toLowerCase();
+              const orgName =
+                repoName === 'lnd' ? 'lightningnetwork' : 'lightninglabs';
+              return {
+                label: `${orgName}/${repoName}`,
+                href: `https://github.com/${orgName}/${repoName}`,
+              };
+            }),
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Lightning Labs, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Lightning Labs, Inc.`,
       },
       prism: {
         theme: lightCodeTheme,

@@ -8,6 +8,7 @@
 .docusaurus
 .cache-loader
 /docs/api
+build.config.json
 
 # Misc
 .DS_Store

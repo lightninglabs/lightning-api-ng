@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from '@docusaurus/Link';
+import { Redirect } from '@docusaurus/router';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Layout from '@theme/Layout';
@@ -13,14 +14,6 @@ function HomepageHeader() {
       <div className="container">
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="docs/api/lnd"
-          >
-            View the Docs
-          </Link>
-        </div>
       </div>
     </header>
   );
@@ -28,11 +21,14 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
+  const navbar = siteConfig.themeConfig.navbar as any;
+  const firstLink = navbar.items[0]?.docId.replace('/index', '/');
+  if (firstLink) {
+    return <Redirect to={firstLink} />;
+  }
+
   return (
-    <Layout
-      title={`Hello from ${siteConfig.title}`}
-      description="Description will go into a meta tag in <head />"
-    >
+    <Layout title="" description={siteConfig.tagline}>
       <HomepageHeader />
       <main>
         <HomepageFeatures />
