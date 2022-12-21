@@ -30,6 +30,7 @@
   --ifm-color-primary-lighter: #fdfafe;
   --ifm-color-primary-lightest: #ffffff;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --search-local-highlight-color: var(--ifm-color-primary-darkest);
 }
 
 .ReactCollapse--collapse {

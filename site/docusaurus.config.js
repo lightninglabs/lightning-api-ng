@@ -23,6 +23,25 @@ const config = {
     locales: ['en'],
   },
 
+  themes: [
+    // ... Your other themes.
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
+      ({
+        // ... Your options.
+        // `hashed` is recommended as long-term-cache of index file is possible.
+        hashed: true,
+        // Base route path(s) of docs. Slash at beginning is not required.
+        // Note: for docs-only mode, this needs to be the same as routeBasePath
+        // in your @docusaurus/preset-classic config e.g., "/".
+        docsRouteBasePath: '/',
+        // Whether to index blog.
+        indexBlog: false,
+      }),
+    ],
+  ],
+
   presets: [
     [
       'classic',

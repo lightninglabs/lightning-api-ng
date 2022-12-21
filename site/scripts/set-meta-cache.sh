@@ -5,3 +5,6 @@ gsutil -m setmeta -r -h "Cache-Control: public, max-age=0, must-revalidate" gs:/
 
 # cache files in the assets dir forever
 gsutil -m setmeta -r -h "cache-control: public, max-age=31536000, immutable" gs://${GC_BUCKET}/${GC_PATH}assets/**
+
+# cache the search index forever
+gsutil -m setmeta -r -h "cache-control: public, max-age=31536000, immutable" gs://${GC_BUCKET}/${GC_PATH}search-index.json
