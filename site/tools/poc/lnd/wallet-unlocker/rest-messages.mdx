@@ -1,0 +1,57 @@
+---
+sidebar_position: 101
+---
+
+# REST Messages
+
+## lnrpcChanBackupSnapshot
+
+| Field                                                                                                                                                      | Type     | Format                                          |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------- |
+| <MessageField name="single_chan_backups">The set of new channels that have been added since the last channel backup snapshot was requested.</MessageField> | `object` | [`lnrpcChannelBackups`](#lnrcpchannelbackups)   |
+| <MessageField name="multi_chan_backup">A multi-channel backup that covers all open channels currently known to lnd. </MessageField>                        | `object` | [`lnrpcMultiChanBackup`](#lnrcpmultichanbackup) |
+
+## lnrpcChannelBackups
+
+| Field                                                                                         | Type    | Format                                            |
+| --------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------- |
+| <MessageField name="chan_backups">A set of single-chan static channel backups.</MessageField> | `array` | [`array lnrpcChannelBackup`](#lnrcpchannelbackup) |
+
+## lnrpcChannelBackup
+
+| Field                                                                                                                                                                                                                                                                            | Type     | Format                                    |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------- |
+| <MessageField name="chan_point">Identifies the channel that this backup belongs to. </MessageField>                                                                                                                                                                              | `object` | [`lnrpcChannelPoint`](#lnrcpchannelpoint) |
+| <MessageField name="chan_backup">Is an encrypted single-chan backup. this can be passed to RestoreChannelBackups, or the WalletUnlocker Init and Unlock methods in order to trigger the recovery protocol. When using REST, this field must be encoded as base64.</MessageField> | `string` | `byte`                                    |
+
+## lnrpcChannelPoint
+
+| Field                                                                                                                                          | Type      | Format   |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | --------- | -------- |
+| <MessageField name="funding_txid_bytes">Txid of the funding transaction. When using REST, this field must be encoded as base64.</MessageField> | `string`  | `bytes`  |
+| <MessageField name="funding_txid_str">Hex-encoded string representing the byte-reversed hash of the funding transaction. </MessageField>       | `string`  | `string` |
+| <MessageField name="output_index">The index of the output of the funding transaction </MessageField>                                           | `integer` | `uint32` |
+
+## lnrpcMultiChanBackup
+
+| Field                                                                                                                                                                                                                                                                                                           | Type     | Format                                          |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------------------------- |
+| <MessageField name="chan_points">Is the set of all channels that are included in this multi-channel backup. </MessageField>                                                                                                                                                                                     | `array`  | [`array lnrpcChannelPoint`](#lnrcpchannelpoint) |
+| <MessageField name="multi_chan_backup">A single encrypted blob containing all the static channel backups of the channel listed above. This can be stored as a single file or blob, and safely be replaced with any prior/future versions. When using REST, this field must be encoded as base64.</MessageField> | `string` | `bytes`                                         |
+
+## lnrpcWatchOnly
+
+| Field                                                                                                                                                                                                                                                                                                                                                                                                                                  | Type     | Format                                                  |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------- |
+| <MessageField name="master_key_birthday_timestamp">The unix timestamp in seconds of when the master key was created. lnd will only start scanning for funds in blocks that are after the birthday which can speed up the process significantly. If the birthday is not known, this should be left at its default value of 0 in which case lnd will start scanning from the first SegWit block (481824 on mainnet). </MessageField>     | `string` | `uint64`                                                |
+| <MessageField name="master_key_fingerprint">The fingerprint of the root key (also known as the key with derivation path m/) from which the account public keys were derived from. This may be required by some hardware wallets for proper identification and signing. The bytes must be in big-endian order. </MessageField>                                                                                                          | `string` | `byte`                                                  |
+| <MessageField name="accounts">The list of accounts to import. There _must_ be an account for all of lnd's main key scopes: BIP49/BIP84 (m/49'/0'/0', m/84'/0'/0', note that the coin type is always 0, even for testnet/regtest) and lnd's internal key scope (m/1017'/\u003ccoin_type\u003e'/\u003caccount\u003e'), where account is the key family as defined in `keychain/derivation.go` (currently indices 0 to 9).</MessageField> | `array`  | [`array lnrpcWatchOnlyAccount`](#lnrcpwatchonlyaccount) |
+
+## lnrpcWatchOnlyAccount
+
+| Field                                                                                                                                                                                                                                                                                                                                                                              | Type      | Format   |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | -------- |
+| <MessageField name="purpose">Purpose is the first number in the derivation path, must be either 49, 84 or 1017. </MessageField>                                                                                                                                                                                                                                                    | `integer` | `uint32` |
+| <MessageField name="coin_type">Coin type is the second number in the derivation path, this is _always_ 0 for purposes 49 and 84. It only needs to be set to 1 for purpose 1017 on testnet or regtest. </MessageField>                                                                                                                                                              | `integer` | `uint32` |
+| <MessageField name="account">Account is the third number in the derivation path. For purposes 49 and 84 at least the default account (index 0) needs to be created but optional additional accounts are allowed. For purpose 1017 there needs to be exactly one account for each of the key families defined in `keychain/derivation.go` (currently indices 0 to 9)</MessageField> | `integer` | `uint32` |
+| <MessageField name="xpub">The extended public key at depth 3 for the given account. </MessageField>                                                                                                                                                                                                                                                                                | `string`  | `string` |

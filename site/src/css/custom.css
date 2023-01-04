@@ -1,0 +1,64 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+@import 'rc-tooltip/assets/bootstrap_white.css';
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #57038d;
+  --ifm-color-primary-dark: #4e037f;
+  --ifm-color-primary-darker: #4a0378;
+  --ifm-color-primary-darkest: #3d0263;
+  --ifm-color-primary-light: #60039b;
+  --ifm-color-primary-lighter: #6403a2;
+  --ifm-color-primary-lightest: #7104b7;
+  --ifm-code-font-size: 95%;
+  --ifm-code-padding-horizontal: 0.4rem;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #e3c0f7;
+  --ifm-color-primary-dark: #d299f2;
+  --ifm-color-primary-darker: #c986f0;
+  --ifm-color-primary-darkest: #af4be8;
+  --ifm-color-primary-light: #f4e7fc;
+  --ifm-color-primary-lighter: #fdfafe;
+  --ifm-color-primary-lightest: #ffffff;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --search-local-highlight-color: var(--ifm-color-primary-darkest);
+}
+
+.ReactCollapse--collapse {
+  transition: height 500ms;
+}
+
+.rc-tooltip-inner {
+  color: var(--ifm-color-info-contrast-foreground);
+  background-color: var(--ifm-color-info-contrast-background);
+}
+.rc-tooltip-placement-bottom .rc-tooltip-arrow,
+.rc-tooltip-placement-bottomLeft .rc-tooltip-arrow,
+.rc-tooltip-placement-bottomRight .rc-tooltip-arrow {
+  border-bottom-color: var(--ifm-color-info-contrast-background);
+}
+.rc-tooltip-placement-top .rc-tooltip-arrow,
+.rc-tooltip-placement-topLeft .rc-tooltip-arrow,
+.rc-tooltip-placement-topRight .rc-tooltip-arrow {
+  border-top-color: var(--ifm-color-info-contrast-background);
+}
+.rc-tooltip-placement-left .rc-tooltip-arrow {
+  border-left-color: var(--ifm-color-info-contrast-background);
+}
+.rc-tooltip-placement-right .rc-tooltip-arrow {
+  border-right-color: var(--ifm-color-info-contrast-background);
+}
+.rc-tooltip-inner {
+  text-align: center;
+  font-size: 1rem;
+  border: 1px solid var(--ifm-color-info-contrast-background);
+}
