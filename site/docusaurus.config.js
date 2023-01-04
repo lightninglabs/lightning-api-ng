@@ -3,14 +3,13 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
-const buildConfig = require('./build.config.json');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: buildConfig.title,
+  title: 'Lightning Labs API Reference',
   tagline: 'Dinosaurs are cool',
-  url: buildConfig.url,
-  baseUrl: buildConfig.baseUrl,
+  url: 'https://lightning.engineering',
+  baseUrl: '/api-docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon-32x32.png',
@@ -67,18 +66,42 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: buildConfig.title,
+        title: 'Lightning Labs API Reference',
         logo: {
           alt: 'Lightning Labs Logo',
           src: 'img/icon-48x48.png',
         },
         items: [
-          ...buildConfig.repos.map((label) => ({
+          {
             type: 'doc',
-            docId: `api/${label.toLowerCase()}/index`,
+            docId: 'api/lnd/index',
             position: 'left',
-            label,
-          })),
+            label: 'LND',
+          },
+          {
+            type: 'doc',
+            docId: 'api/loop/index',
+            position: 'left',
+            label: 'Loop',
+          },
+          {
+            type: 'doc',
+            docId: 'api/pool/index',
+            position: 'left',
+            label: 'Pool',
+          },
+          {
+            type: 'doc',
+            docId: 'api/faraday/index',
+            position: 'left',
+            label: 'Faraday',
+          },
+          {
+            type: 'doc',
+            docId: 'api/taro/index',
+            position: 'left',
+            label: 'Taro',
+          },
           {
             href: 'https://github.com/lightninglabs/lightning-api-ng/issues',
             label: 'Feedback',
@@ -92,10 +115,26 @@ const config = {
           {
             title: 'Docs',
             items: [
-              ...buildConfig.repos.map((label) => ({
-                label,
-                to: `api/${label.toLowerCase()}`,
-              })),
+              {
+                label: 'LND',
+                to: 'api/lnd',
+              },
+              {
+                label: 'Loop',
+                to: 'api/loop',
+              },
+              {
+                label: 'Pool',
+                to: 'api/pool',
+              },
+              {
+                label: 'Faraday',
+                to: 'api/faraday',
+              },
+              {
+                label: 'Taro',
+                to: 'api/taro',
+              },
             ],
           },
           {
@@ -117,15 +156,28 @@ const config = {
           },
           {
             title: 'Github',
-            items: buildConfig.repos.map((label) => {
-              const repoName = label.toLowerCase();
-              const orgName =
-                repoName === 'lnd' ? 'lightningnetwork' : 'lightninglabs';
-              return {
-                label: `${orgName}/${repoName}`,
-                href: `https://github.com/${orgName}/${repoName}`,
-              };
-            }),
+            items: [
+              {
+                label: 'lightningnetwork/lnd',
+                href: 'http://github.com/lightningnetwork/lnd',
+              },
+              {
+                label: 'lightninglabs/loop',
+                href: 'http://github.com/lightninglabs/loop',
+              },
+              {
+                label: 'lightninglabs/pool',
+                href: 'http://github.com/lightninglabs/pool',
+              },
+              {
+                label: 'lightninglabs/faraday',
+                href: 'http://github.com/lightninglabs/faraday',
+              },
+              {
+                label: 'lightninglabs/pool',
+                href: 'http://github.com/lightninglabs/pool',
+              },
+            ],
           },
         ],
         copyright: `Copyright © ${new Date().getFullYear()} Lightning Labs, Inc.`,

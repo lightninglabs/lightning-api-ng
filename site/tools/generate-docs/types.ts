@@ -1,10 +1,3 @@
-export interface BuildConfig {
-  title: string;
-  url: string;
-  baseUrl: string;
-  repos: string[];
-}
-
 export interface JsonRestEnum {
   default: string;
   enum: string[];

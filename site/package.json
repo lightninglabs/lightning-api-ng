@@ -1,6 +1,6 @@
 {
   "name": "api-docs-site",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -13,8 +13,7 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
     "generate-docs": "ts-node ./tools/generate-docs/main.ts",
-    "watch-lnd": "BUILD_CONFIG=lnd nodemon --watch ./tools/generate-docs --watch ./tools/templates --ext ts,md --exec \"yarn generate-docs\"",
-    "watch-labs": "BUILD_CONFIG=labs nodemon --watch ./tools/generate-docs --watch ./tools/templates --ext ts,md --exec \"yarn generate-docs\"",
+    "watch": "nodemon --watch ./tools/generate-docs --watch ./tools/templates --ext ts,md --exec \"yarn generate-docs\"",
     "deploy": "echo \"Deploying to $GC_BUCKET/$GC_PATH\" && yarn push && yarn setcache",
     "push": "gsutil -m rsync -d -r ./build/ gs://$GC_BUCKET/$GC_PATH",
     "clean-bucket": "echo \"Cleaning $GC_BUCKET/$GC_PATH\" && gsutil -m rm -r gs://$GC_BUCKET/$GC_PATH",
