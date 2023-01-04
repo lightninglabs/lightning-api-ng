@@ -53,8 +53,8 @@ the static sites are deployed.
 
 Follow these steps to run the pipeline locally. You can modify the source
 code for the `merger` tool (golang), markdown generator (Typescript), and
-the markdown templates (in `site/rc/templates`), to alter the generated static
-pages.
+the markdown templates (in `site/tools/templates/`), to alter the generated
+static pages.
 
 **System Requirements**
 
@@ -62,46 +62,51 @@ pages.
 - [protoc](https://github.com/protocolbuffers/protobuf/releases/tag/v3.6.0) v3.6.0 (newer versions may not work as expected)
 - [NodeJS](https://nodejs.org) v16.x or v18.x
 
+#### Initial Setup
+
 1. Clone this repo
    ```bash
    $ git clone https://github.com/lightninglabs/lightning-api-ng.git
    $ cd lightning-api-ng
-   ```
-1. Run the script to generate JSON files for each daemon from their proto files
-   ```bash
-   $ ./generate.sh
    ```
 1. Install NodeJS dependencies
    ```bash
    $ cd site/
    $ yarn
    ```
-1. Run the website locally
-   1. In one terminal, start the Docusaurus site
-      ```bash
-      $ yarn start
-      ```
-   1. In a second terminal, start the script to watch for changes of source
-      files and automatically regenerate the markdown files
-      ```bash
-      # Run one of the commands below.
-      # For LND:
-      $ yarn watch-lnd
-      # For Loop, Pool, Faraday, Taro:
-      $ yarn watch-labs
-      ```
 
-## Building the static website
+#### Active development
 
+1. Run the script to generate JSON files for each daemon from their proto files
+   ```bash
+   $ ./generate.sh
+   ```
+1. In one terminal, start the script to watch for changes of source
+   files and automatically regenerate the markdown files
+   ```bash
+   $ cd site/
+   $ yarn watch
+   ```
+1. In a second terminal, start the Docusaurus site
+   ```bash
+   $ cd site/
+   $ yarn start
+   ```
+1. A new browser window should automatically open http://localhost:3000/api-docs/
+
+#### Building the static website for deployment
+
+1. Run the script to generate JSON files for each daemon from their proto files
+   ```bash
+   $ ./generate.sh
+   ```
 1. Run the script to generate the markdown pages from the JSON files
    ```bash
-   # Run one of the commands below.
-   # For LND:
-   $ BUILD_CONFIG=lnd yarn generate-docs
-   # For Loop, Pool, Faraday, Taro:
-   $ BUILD_CONFIG=labs yarn generate-docs
+   $ cd site/
+   $ yarn generate-docs
    ```
 1. Build the static site
    ```bash
+   $ cd site/
    $ yarn build
    ```
