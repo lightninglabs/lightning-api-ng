@@ -189,6 +189,11 @@ func (m *Method) StreamingDirection() string {
 
 // ExportMarkdown exports the method to a markdown file.
 func (m *Method) ExportMarkdown(servicePath string) error {
+	// update the rest types & placement before rendering to markdown
+	// because there may be multiple methods with the same request type
+	if m.RestMapping != nil {
+		m.RestMapping.UpdateMessage(m.Request())
+	}
 	fileName := strcase.ToKebab(m.Name)
 	filePath := fmt.Sprintf("%s/%s.mdx", servicePath, fileName)
 	fmt.Printf("Exporting method %s to %s\n", m.Name, filePath)

@@ -14,8 +14,9 @@ import (
 )
 
 type App struct {
-	Name     string
-	Packages map[string]*Package
+	Name      string
+	Packages  map[string]*Package
+	RestTypes *RestTypes
 
 	ShowSummary  bool
 	FileRepoUrls []FileRepoUrl
@@ -43,6 +44,7 @@ func NewApp(config *config.Config, apiSpec *defs.ApiSpec,
 
 	app := &App{
 		Name:        config.App,
+		RestTypes:   NewRestTypes(apiSpec.RESTTypes),
 		ShowSummary: config.App != "lnd",
 		Config:      config,
 		Templates:   templates,
@@ -123,6 +125,49 @@ func (a *App) ExperimentalServices() []*ExperimentalService {
 	return services
 }
 
+// RestEndpoints returns a list of all REST endpoints in Packages.
+func (a *App) RestEndpoints() []*RestEndpoint {
+	// Collect all of the services for all packages.
+	services := make([]*Service, 0)
+	for _, pkg := range a.Packages {
+		services = append(services, pkg.Services...)
+	}
+
+	// Collect all of the methods for all services.
+	methods := make([]*Method, 0)
+	for _, service := range services {
+		methods = append(methods, service.Methods...)
+	}
+
+	// Create a list of REST endpoints with a valid path.
+	endpoints := make([]*RestEndpoint, 0)
+	for _, method := range methods {
+		if method.RestMapping == nil ||
+			method.RestMapping.Path == "" {
+			continue
+		}
+		ep := &RestEndpoint{
+			RestPath:   method.RestMapping.Path,
+			RestMethod: method.RestMapping.Method,
+			LinkUrl: fmt.Sprintf(
+				"%s/%s",
+				markdown.ToKebabCase(method.Service.Name),
+				markdown.ToKebabCase(method.Name),
+			),
+			MethodName: fmt.Sprintf("%s.%s",
+				method.Service.Pkg.Name, method.Name),
+		}
+		endpoints = append(endpoints, ep)
+	}
+
+	// Sort the REST endpoints by path.
+	sort.Slice(endpoints, func(i, j int) bool {
+		return endpoints[i].RestPath < endpoints[j].RestPath
+	})
+
+	return endpoints
+}
+
 // GetMessage returns the message with the given full type name.
 func (a *App) GetMessage(fullType string) (*Message, error) {
 	// Split "lnrpc.Invoice.InvoiceState" into "lnrpc" and
@@ -133,6 +178,7 @@ func (a *App) GetMessage(fullType string) (*Message, error) {
 
 	if pkg, ok := a.Packages[pkgName]; ok {
 		if msg, ok := pkg.Messages[msgType]; ok {
+			a.RestTypes.UpdateMessage(msg)
 			return msg, nil
 		}
 	}
@@ -216,10 +262,17 @@ func (a *App) ExportMarkdown() error {
 		}
 	}
 
+	// Export a doc with the list of all rest paths.
+	filePath := fmt.Sprintf("%s/rest-endpoints.md", a.Config.AppOutputDir)
+	err := markdown.ExecuteEndpointsTemplate(a.Templates, a, filePath)
+	if err != nil {
+		return err
+	}
+
 	// Export the app index doc.
-	filePath := fmt.Sprintf("%s/index.md", a.Config.AppOutputDir)
+	filePath = fmt.Sprintf("%s/index.md", a.Config.AppOutputDir)
 	fmt.Printf("Executing template %s for app %s\n", filePath, a.Name)
-	err := markdown.ExecuteAppTemplate(a.Templates, a.Name, a, filePath)
+	err = markdown.ExecuteAppTemplate(a.Templates, a.Name, a, filePath)
 	if err != nil {
 		return err
 	}
