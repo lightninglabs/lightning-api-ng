@@ -34,6 +34,10 @@ rpc {{.Name}} ({{if .RequestStreaming}}stream {{end}}{{.RequestType}}) returns (
 | <Pill> {{.RestMethod}} </Pill> | `{{.RestPath}}` |
 
 {{end}}
+## Code Samples
+
+{{template "tabs.md" .CodeSamples}}
+
 ## Messages
 
 {{template "request_message.md" multiArgs "Message" .Request "Source" .RequestTypeSource}}

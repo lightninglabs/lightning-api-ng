@@ -27,6 +27,7 @@ type Method struct {
 	ResponseTypeSource string
 	ResponseStreaming  bool
 	RestMapping        *RestMapping
+	CodeSamples        *CodeSamples
 
 	// These values are set after the method is created. They are simply
 	// used to avoid having to look up the messages for each method call.
@@ -62,6 +63,8 @@ func NewMethod(methodDef *defs.ServiceMethod, service *Service) *Method {
 
 		m.RestMapping = NewRestMapping(*methodDef.RESTMappings[0])
 	}
+
+	m.CodeSamples = NewCodeSamples(m)
 
 	return m
 }
