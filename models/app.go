@@ -141,6 +141,25 @@ func (a *App) GetMessage(fullType string) (*Message, error) {
 		"package", msgType, fullType, pkgName)
 }
 
+// GetNestedMessages recursively updates a map of all nested messages for the
+// given message.
+func (a *App) GetNestedMessages(message *Message, allMessages map[string]*Message) {
+	for _, field := range message.Fields {
+		// Only include the non-native field types (ex: lnrpc.OutPoint)
+		if !strings.Contains(field.FullType, ".") {
+			continue
+		}
+
+		msg, _ := a.GetMessage(field.FullType)
+
+		// Add the message to the map if it was found.
+		if msg != nil {
+			allMessages[field.FullType] = msg
+			a.GetNestedMessages(msg, allMessages)
+		}
+	}
+}
+
 // ExportMarkdown exports the app as markdown.
 func (a *App) ExportMarkdown() error {
 	fmt.Printf("Exporting app %s\n", a.Name)

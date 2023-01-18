@@ -7,6 +7,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/lightninglabs/lightning-api-ng/defs"
 	"github.com/lightninglabs/lightning-api-ng/markdown"
+	"golang.org/x/exp/slices"
 )
 
 type Method struct {
@@ -29,8 +30,9 @@ type Method struct {
 
 	// These values are set after the method is created. They are simply
 	// used to avoid having to look up the messages for each method call.
-	request  *Message
-	response *Message
+	request        *Message
+	response       *Message
+	nestedMessages []*Message
 }
 
 // NewMethod creates a new method from a method definition.
@@ -91,10 +93,36 @@ func (m *Method) Response() *Message {
 	return m.response
 }
 
+// NestedMessages returns a slice of all the nested messages for this method.
+func (m *Method) NestedMessages() []*Message {
+	if m.nestedMessages == nil {
+		// Create a new map and populated it with the nested messages.
+		messages := make(map[string]*Message)
+		m.Service.Pkg.App.GetNestedMessages(m.Request(), messages)
+		m.Service.Pkg.App.GetNestedMessages(m.Response(), messages)
+
+		// Convert the map to a slice.
+		m.nestedMessages = make([]*Message, 0, len(messages))
+		for _, msg := range messages {
+			m.nestedMessages = append(m.nestedMessages, msg)
+		}
+		slices.SortFunc(m.nestedMessages, func(i, j *Message) bool {
+			return strings.ToLower(i.FullName) <
+				strings.ToLower(j.FullName)
+		})
+	}
+	return m.nestedMessages
+}
+
 // IsDeprecated returns true if the method contains the word "deprecated" in
 // the description.
 func (m *Method) IsDeprecated() bool {
 	return strings.Contains(strings.ToLower((m.Description)), "deprecated")
+}
+
+// HasNestedMessages returns true if the method has nested messages.
+func (m *Method) HasNestedMessages() bool {
+	return len(m.NestedMessages()) > 0
 }
 
 // HasRestMapping returns true if the method has a REST mapping.

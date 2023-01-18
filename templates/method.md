@@ -38,3 +38,8 @@ rpc {{.Name}} ({{if .RequestStreaming}}stream {{end}}{{.RequestType}}) returns (
 
 {{template "request_message.md" multiArgs "Message" .Request "Source" .RequestTypeSource}}
 {{template "message.md" multiArgs "Message" .Response "Source" .ResponseTypeSource}}
+
+{{if .HasNestedMessages}}## Nested Messages
+
+
+{{range .NestedMessages}}{{template "message.md" multiArgs "Message" .}}{{end}}{{end}}
