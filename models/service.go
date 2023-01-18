@@ -15,6 +15,7 @@ type Service struct {
 	Name        string
 	FullName    string
 	Description string
+	Methods     []*Method
 }
 
 // NewService creates a new Service model from a Service definition.
@@ -28,6 +29,11 @@ func NewService(svcDef *defs.Service, pkg *Package, fileName string) *Service {
 		FullName:    svcDef.FullName,
 		Name:        svcDef.Name,
 		Description: svcDef.Description,
+		Methods:     make([]*Method, 0),
+	}
+	for _, methodDef := range svcDef.Methods {
+		method := NewMethod(methodDef, svc)
+		svc.Methods = append(svc.Methods, method)
 	}
 	return svc
 }
@@ -43,6 +49,13 @@ func (s *Service) ExportMarkdown() error {
 	// Create the service dir if it doesn't exists.
 	if _, err := os.Stat(servicePath); os.IsNotExist(err) {
 		err := os.MkdirAll(servicePath, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, method := range s.Methods {
+		err := method.ExportMarkdown(servicePath)
 		if err != nil {
 			return err
 		}

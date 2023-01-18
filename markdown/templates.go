@@ -18,7 +18,7 @@ const (
 
 var (
 	// pathGlobs is a list of globs that are used to load all templates.
-	pathGlobs = []string{"apps/*.md"}
+	pathGlobs = []string{"*.md", "apps/*.md"}
 )
 
 // LoadAllTemplates loads all templates from the templates directory.
