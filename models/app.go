@@ -106,7 +106,14 @@ func (a *App) ExperimentalServices() []*ExperimentalService {
 			continue
 		}
 
-		// TODO: add all services from this package
+		fmt.Printf("Experimental package %s\n", pkg.Name)
+		for _, service := range pkg.Services {
+			services = append(services, &ExperimentalService{
+				Name:      service.Name,
+				LowerName: strings.ToLower(service.Name),
+				File:      service.FileName,
+			})
+		}
 	}
 
 	// sort the services
