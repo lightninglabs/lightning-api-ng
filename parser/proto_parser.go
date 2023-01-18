@@ -1,4 +1,4 @@
-package main
+package parser
 
 import (
 	"encoding/json"
@@ -6,9 +6,10 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
-	"strconv"
 	"strings"
 
+	"github.com/lightninglabs/lightning-api-ng/config"
+	"github.com/lightninglabs/lightning-api-ng/defs"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gopkg.in/yaml.v3"
@@ -20,47 +21,37 @@ var (
 	subCommandPattern = regexp.MustCompile("(.*?): `(.*?)`")
 )
 
-func main() {
-	app := os.Args[1]
-	mainFile := fmt.Sprintf("./build/protos/%s/generated.json", app)
-	template := &Template{}
-	fmt.Printf("Reading template file %s\n", mainFile)
+func LoadApiSpec(config *config.Config) *defs.ApiSpec {
+	mainFile := fmt.Sprintf("./build/protos/%s/generated.json", config.App)
+	apiSpec := &defs.ApiSpec{}
+	fmt.Printf("Reading API specification file %s\n", mainFile)
 	tplBytes, err := os.ReadFile(mainFile)
 	if err != nil {
 		fail(err)
 	}
 
-	err = json.Unmarshal(tplBytes, &template)
+	err = json.Unmarshal(tplBytes, &apiSpec)
 	if err != nil {
 		fail(err)
 	}
 
-	fmt.Printf("Got template with %d files\n", len(template.Files))
-	template.RESTTypes = make(map[string]interface{})
-	if err := fetchEnvVars(template); err != nil {
-		fail(err)
-	}
+	fmt.Printf("Got API spec with %d files\n", len(apiSpec.Files))
+	apiSpec.RESTTypes = make(map[string]*defs.RESTType)
 
-	// If the proto source dir is not empty, make sure we can use it
-	// directly by appending a tailing path separator.
-	protoSrcDir := template.ProtoSrcDir
-	if protoSrcDir != "" {
-		protoSrcDir = fmt.Sprintf("%s/", protoSrcDir)
-	}
-
-	for idx, file := range template.Files {
-		if len(template.Files[idx].Services) == 0 {
+	for idx, file := range apiSpec.Files {
+		if len(apiSpec.Files[idx].Services) == 0 {
 			continue
 		}
 
 		baseName := strings.ReplaceAll(file.Name, ".proto", "")
 
 		protoFile := fmt.Sprintf(
-			"./build/%s/%s%s", app, protoSrcDir, file.Name,
+			"./build/%s/%s%s", config.App, config.ProtoSrcDir,
+			file.Name,
 		)
 		externalLink := fmt.Sprintf(
-			"%s/blob/%s/%s%s", template.RepoURL, template.Commit,
-			protoSrcDir, file.Name,
+			"%s/blob/%s/%s%s", config.RepoURL, config.Commit,
+			config.ProtoSrcDir, file.Name,
 		)
 		fmt.Printf("Reading proto file %s with external link %s\n",
 			protoFile, externalLink)
@@ -87,7 +78,8 @@ func main() {
 		}
 
 		restFile := fmt.Sprintf(
-			"./build/protos/%s/%s.swagger.json", app, baseName,
+			"./build/protos/%s/%s.swagger.json", config.App,
+			baseName,
 		)
 
 		fmt.Printf("Reading REST file %s\n", restFile)
@@ -97,18 +89,18 @@ func main() {
 			continue
 		}
 
-		rest := &Swagger{}
+		rest := &defs.Swagger{}
 		err = json.Unmarshal(restBytes, &rest)
 		if err != nil {
 			fail(err)
 		}
 
 		for name, definition := range rest.Definitions {
-			template.RESTTypes[name] = definition
+			apiSpec.RESTTypes[name] = definition
 		}
 
 		mappingFile := fmt.Sprintf(
-			"./build/protos/%s/%s.yaml", app, baseName,
+			"./build/protos/%s/%s.yaml", config.App, baseName,
 		)
 
 		fmt.Printf("Reading http mapping file %s\n", mappingFile)
@@ -127,7 +119,7 @@ func main() {
 		rules := http.Rules
 		fmt.Printf("Got mapping with %d rules\n", len(rules))
 		for _, rule := range rules {
-			service := template.Files[idx].Services[0]
+			service := apiSpec.Files[idx].Services[0]
 			ruleMethod := strings.ReplaceAll(
 				rule.GetSelector(), service.FullName+".", "",
 			)
@@ -135,7 +127,7 @@ func main() {
 			for idx := range service.Methods {
 				method := service.Methods[idx]
 				if method.Name == ruleMethod {
-					mapping := NewRESTMapping(
+					mapping := defs.NewRESTMapping(
 						rule, rest.Paths,
 					)
 
@@ -150,17 +142,7 @@ func main() {
 		}
 	}
 
-	finalFile := fmt.Sprintf("./build/%s.json", app)
-	finalBytes, err := json.MarshalIndent(template, "", "  ")
-	if err != nil {
-		fail(err)
-	}
-
-	err = os.WriteFile(finalFile, finalBytes, 0o644)
-	if err != nil {
-		fail(err)
-	}
-	fmt.Printf("Saved output to: %s\n", finalFile)
+	return apiSpec
 }
 
 func fail(err error) {
@@ -168,30 +150,7 @@ func fail(err error) {
 	os.Exit(1)
 }
 
-func fetchEnvVars(template *Template) error {
-	template.RepoURL = os.Getenv("REPO_URL")
-	template.Commit = os.Getenv("COMMIT")
-	template.ProtoSrcDir = os.Getenv("PROTO_SRC_DIR")
-	template.ExperimentalPackages = strings.Split(
-		os.Getenv("EXPERIMENTAL_PACKAGES"), " ",
-	)
-	port, err := strconv.ParseUint(os.Getenv("GRPC_PORT"), 10, 16)
-	if err != nil {
-		return err
-	}
-	template.GrpcPort = uint16(port)
-	port, err = strconv.ParseUint(os.Getenv("REST_PORT"), 10, 16)
-	if err != nil {
-		return err
-	}
-	template.RESTPort = uint16(port)
-	template.CliCmd = os.Getenv("COMMAND")
-	template.DaemonCli = os.Getenv("DAEMON")
-
-	return nil
-}
-
-func assignSourceLinks(method *ServiceMethod, source, baseLink string) {
+func assignSourceLinks(method *defs.ServiceMethod, source, baseLink string) {
 	lines := strings.Split(strings.ReplaceAll(source, "\r\n", "\n"), "\n")
 
 	lineSuffix := func(needle string) string {
@@ -220,7 +179,7 @@ func assignSourceLinks(method *ServiceMethod, source, baseLink string) {
 	method.ResponseTypeSource = fmt.Sprintf("%s%s", baseLink, suffix)
 }
 
-func parseMethodDescription(method *ServiceMethod) error {
+func parseMethodDescription(method *defs.ServiceMethod) error {
 	description := method.Description
 	if subCommandPattern.MatchString(description) {
 		matches := subCommandPattern.FindStringSubmatch(description)

@@ -4,7 +4,7 @@ set -e
 mkdir -p build
 go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
 
-go build -o merger .
+go build -o mdgen ./cmd/mdgen/
 
 
 function initrepo() {
@@ -50,7 +50,7 @@ function compile() {
   fi
   
   export REPO_URL COMMIT PROTO_SRC_DIR EXPERIMENTAL_PACKAGES GRPC_PORT REST_PORT COMMAND DAEMON
-  ./merger $COMPONENT
+  ./mdgen $COMPONENT
 }
 
 # Generic options.
