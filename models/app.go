@@ -123,6 +123,24 @@ func (a *App) ExperimentalServices() []*ExperimentalService {
 	return services
 }
 
+// GetMessage returns the message with the given full type name.
+func (a *App) GetMessage(fullType string) (*Message, error) {
+	// Split "lnrpc.Invoice.InvoiceState" into "lnrpc" and
+	// "Invoice.InvoiceState"
+	period := strings.Index(fullType, ".")
+	pkgName := fullType[:period]
+	msgType := fullType[period+1:]
+
+	if pkg, ok := a.Packages[pkgName]; ok {
+		if msg, ok := pkg.Messages[msgType]; ok {
+			return msg, nil
+		}
+	}
+
+	return nil, fmt.Errorf("cannot find message %s for %s in the %s "+
+		"package", msgType, fullType, pkgName)
+}
+
 // ExportMarkdown exports the app as markdown.
 func (a *App) ExportMarkdown() error {
 	fmt.Printf("Exporting app %s\n", a.Name)

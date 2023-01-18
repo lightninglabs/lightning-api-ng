@@ -26,6 +26,11 @@ type Method struct {
 	ResponseTypeSource string
 	ResponseStreaming  bool
 	RestMapping        *RestMapping
+
+	// These values are set after the method is created. They are simply
+	// used to avoid having to look up the messages for each method call.
+	request  *Message
+	response *Message
 }
 
 // NewMethod creates a new method from a method definition.
@@ -56,6 +61,34 @@ func NewMethod(methodDef *defs.ServiceMethod, service *Service) *Method {
 	}
 
 	return m
+}
+
+// Request returns the request message instance using the request full type.
+func (m *Method) Request() *Message {
+	if m.request == nil {
+		msg, err := m.Service.Pkg.App.GetMessage(m.RequestFullType)
+		if err != nil {
+			panic(fmt.Sprintf("Error getting message %s for %s: %s",
+				m.RequestFullType, m.Name, err))
+		}
+		msg.Source = m.RequestTypeSource
+		m.request = msg
+	}
+	return m.request
+}
+
+// Response returns the request message instance using the request full type.
+func (m *Method) Response() *Message {
+	if m.response == nil {
+		msg, err := m.Service.Pkg.App.GetMessage(m.ResponseFullType)
+		if err != nil {
+			panic(fmt.Sprintf("Error getting message %s for %s: %s",
+				m.ResponseFullType, m.Name, err))
+		}
+		msg.Source = m.ResponseTypeSource
+		m.response = msg
+	}
+	return m.response
 }
 
 // IsDeprecated returns true if the method contains the word "deprecated" in

@@ -10,6 +10,7 @@ type Package struct {
 	Name         string
 	Description  string
 	Experimental bool
+	Messages     map[string]*Message
 	Services     []*Service
 
 	App *App
@@ -21,6 +22,7 @@ func NewPackage(name string, app *App) *Package {
 	return &Package{
 		Name:     name,
 		App:      app,
+		Messages: make(map[string]*Message),
 		Services: make([]*Service, 0),
 	}
 }
@@ -30,6 +32,13 @@ func NewPackage(name string, app *App) *Package {
 func (p *Package) addProtoFile(file *defs.File) {
 	fmt.Printf("Adding proto file %s to package %s\n", file.Name,
 		file.Package)
+
+	fmt.Printf("Adding %d messages to package %s\n", len(file.Messages),
+		file.Package)
+	for _, msgDef := range file.Messages {
+		msg := NewMessage(msgDef, p, file.Name)
+		p.Messages[msg.LongName] = msg
+	}
 
 	fmt.Printf("Adding %d services to package %s\n", len(file.Services),
 		file.Package)
