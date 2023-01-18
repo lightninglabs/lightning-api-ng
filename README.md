@@ -18,7 +18,7 @@ repos:
 - Faraday: https://github.com/lightninglabs/faraday
 - Taro: https://github.com/lightninglabs/taro
 
-There is a multi-stage pipeline to process the protobuf & Swagger files and
+There is a multi-stage pipeline to consume the protobuf & Swagger files and
 convert them into an HTML static website. The process is as follows:
 
 ```
@@ -26,17 +26,11 @@ convert them into an HTML static website. The process is as follows:
   |
   | - downloads the master branch of each repo
   | - uses protoc to convert *.proto to generated.json
-  | - compiles main.go into ./merger app
+  | - compiles `cmd/mdgen/main.go` into ./mdgen console app
   |
-+ ./merger
++ ./mdgen
   |
-  | - merges *.swagger.json and generated.json into build/app.json
-  |
-+ yarn generate-docs
-  |
-  | - consumes build/*.json and site/tools/templates/*.md
   | - outputs markdown files into site/docs/
-  | - outputs site config into site/build.config.json
   |
 + yarn build
   |
@@ -52,9 +46,8 @@ the static sites are deployed.
 ## Development
 
 Follow these steps to run the pipeline locally. You can modify the source
-code for the `merger` tool (golang), markdown generator (Typescript), and
-the markdown templates (in `site/tools/templates/`), to alter the generated
-static pages.
+code for the `mdgen` tool and the markdown templates (in `templates/`), to
+alter the generated static pages.
 
 **System Requirements**
 
@@ -84,8 +77,7 @@ static pages.
 1. In one terminal, start the script to watch for changes of source
    files and automatically regenerate the markdown files
    ```bash
-   $ cd site/
-   $ yarn watch
+   $ ./watch.sh
    ```
 1. In a second terminal, start the Docusaurus site
    ```bash
@@ -99,11 +91,6 @@ static pages.
 1. Run the script to generate JSON files for each daemon from their proto files
    ```bash
    $ ./generate.sh
-   ```
-1. Run the script to generate the markdown pages from the JSON files
-   ```bash
-   $ cd site/
-   $ yarn generate-docs
    ```
 1. Build the static site
    ```bash
