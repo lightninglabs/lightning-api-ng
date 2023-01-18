@@ -25,3 +25,12 @@ This is a {{.StreamingDirection}}-streaming RPC
 ```
 rpc {{.Name}} ({{if .RequestStreaming}}stream {{end}}{{.RequestType}}) returns ({{if .ResponseStreaming}}stream {{end}}{{.ResponseType}});
 ```
+
+{{if .HasRestMapping}}
+### REST
+
+| HTTP Method                   | Path           |
+| ----------------------------- | -------------- |
+| <Pill> {{.RestMethod}} </Pill> | `{{.RestPath}}` |
+
+{{end}}

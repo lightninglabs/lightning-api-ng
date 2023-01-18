@@ -25,6 +25,7 @@ type Method struct {
 	ResponseFullType   string
 	ResponseTypeSource string
 	ResponseStreaming  bool
+	RestMapping        *RestMapping
 }
 
 // NewMethod creates a new method from a method definition.
@@ -48,6 +49,12 @@ func NewMethod(methodDef *defs.ServiceMethod, service *Service) *Method {
 		ResponseStreaming:  methodDef.ResponseStreaming,
 	}
 
+	if (methodDef.RESTMappings != nil) &&
+		(len(methodDef.RESTMappings) > 0) {
+
+		m.RestMapping = NewRestMapping(*methodDef.RESTMappings[0])
+	}
+
 	return m
 }
 
@@ -55,6 +62,27 @@ func NewMethod(methodDef *defs.ServiceMethod, service *Service) *Method {
 // the description.
 func (m *Method) IsDeprecated() bool {
 	return strings.Contains(strings.ToLower((m.Description)), "deprecated")
+}
+
+// HasRestMapping returns true if the method has a REST mapping.
+func (m *Method) HasRestMapping() bool {
+	return m.RestMapping != nil && m.RestMapping.Path != ""
+}
+
+// RestMethod returns the REST method of the method.
+func (m *Method) RestMethod() string {
+	if m.HasRestMapping() {
+		return m.RestMapping.Method
+	}
+	return ""
+}
+
+// RestPath returns the REST path of the method.
+func (m *Method) RestPath() string {
+	if m.HasRestMapping() {
+		return m.RestMapping.Path
+	}
+	return ""
 }
 
 // StreamingDirection returns the streaming direction of the method.
