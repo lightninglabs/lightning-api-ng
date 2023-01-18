@@ -43,3 +43,8 @@ rpc {{.Name}} ({{if .RequestStreaming}}stream {{end}}{{.RequestType}}) returns (
 
 
 {{range .NestedMessages}}{{template "message.md" multiArgs "Message" .}}{{end}}{{end}}
+
+{{if .HasNestedEnums}}## Enums
+
+
+{{range .NestedEnums}}{{template "enum.md" .}}{{end}}{{end}}

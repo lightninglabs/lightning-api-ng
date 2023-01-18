@@ -160,6 +160,51 @@ func (a *App) GetNestedMessages(message *Message, allMessages map[string]*Messag
 	}
 }
 
+// GetEnum returns the enum with the given full type name.
+func (a *App) GetEnum(fullType string) (*Enum, error) {
+	// Split "lnrpc.ChannelCloseSummary.ClosureType" into "lnrpc" and
+	// "ChannelCloseSummary.ClosureType"
+	period := strings.Index(fullType, ".")
+	pkgName := fullType[:period]
+	enumType := fullType[period+1:]
+
+	if pkg, ok := a.Packages[pkgName]; ok {
+		if enum, ok := pkg.Enums[enumType]; ok {
+			return enum, nil
+		}
+	}
+
+	return nil, fmt.Errorf("cannot find enum %s for %s in the %s package",
+		enumType, fullType, pkgName)
+}
+
+// GetNestedEnums recursively updates a map of all nested enums for the given
+// message.
+func (a *App) GetNestedEnums(message *Message, allEnums map[string]*Enum) {
+	for _, field := range message.Fields {
+		// Only include the non-native field types (ex: lnrpc.OutPoint)
+		if !strings.Contains(field.FullType, ".") {
+			continue
+		}
+
+		enum, _ := a.GetEnum(field.FullType)
+
+		// Add the enum to the map if it was found.
+		if enum != nil {
+			allEnums[field.FullType] = enum
+			continue
+		}
+
+		// If the enum wasn't found, look for a nested message which
+		// may have enum fields.
+		msg, _ := a.GetMessage(field.FullType)
+		if msg != nil {
+			// Search the nested messages for more enums.
+			a.GetNestedEnums(msg, allEnums)
+		}
+	}
+}
+
 // ExportMarkdown exports the app as markdown.
 func (a *App) ExportMarkdown() error {
 	fmt.Printf("Exporting app %s\n", a.Name)

@@ -33,6 +33,7 @@ type Method struct {
 	request        *Message
 	response       *Message
 	nestedMessages []*Message
+	nestedEnums    []*Enum
 }
 
 // NewMethod creates a new method from a method definition.
@@ -114,6 +115,27 @@ func (m *Method) NestedMessages() []*Message {
 	return m.nestedMessages
 }
 
+// NestedEnums returns a slice of all the nested enums for this method.
+func (m *Method) NestedEnums() []*Enum {
+	if m.nestedEnums == nil {
+		// Create a new map and populated it with the nested enums.
+		enums := make(map[string]*Enum)
+		m.Service.Pkg.App.GetNestedEnums(m.Request(), enums)
+		m.Service.Pkg.App.GetNestedEnums(m.Response(), enums)
+
+		// Convert the map to a slice.
+		m.nestedEnums = make([]*Enum, 0, len(enums))
+		for _, enum := range enums {
+			m.nestedEnums = append(m.nestedEnums, enum)
+		}
+		slices.SortFunc(m.nestedEnums, func(i, j *Enum) bool {
+			return strings.ToLower(i.FullName) <
+				strings.ToLower(j.FullName)
+		})
+	}
+	return m.nestedEnums
+}
+
 // IsDeprecated returns true if the method contains the word "deprecated" in
 // the description.
 func (m *Method) IsDeprecated() bool {
@@ -123,6 +145,11 @@ func (m *Method) IsDeprecated() bool {
 // HasNestedMessages returns true if the method has nested messages.
 func (m *Method) HasNestedMessages() bool {
 	return len(m.NestedMessages()) > 0
+}
+
+// HasNestedEnums returns true if the method has nested enums.
+func (m *Method) HasNestedEnums() bool {
+	return len(m.NestedEnums()) > 0
 }
 
 // HasRestMapping returns true if the method has a REST mapping.

@@ -11,6 +11,7 @@ type Package struct {
 	Description  string
 	Experimental bool
 	Messages     map[string]*Message
+	Enums        map[string]*Enum
 	Services     []*Service
 
 	App *App
@@ -23,6 +24,7 @@ func NewPackage(name string, app *App) *Package {
 		Name:     name,
 		App:      app,
 		Messages: make(map[string]*Message),
+		Enums:    make(map[string]*Enum),
 		Services: make([]*Service, 0),
 	}
 }
@@ -38,6 +40,13 @@ func (p *Package) addProtoFile(file *defs.File) {
 	for _, msgDef := range file.Messages {
 		msg := NewMessage(msgDef, p, file.Name)
 		p.Messages[msg.LongName] = msg
+	}
+
+	fmt.Printf("Adding %d enums to package %s\n", len(file.Enums),
+		file.Package)
+	for _, enumDef := range file.Enums {
+		enum := NewEnum(enumDef, p, file.Name)
+		p.Enums[enum.LongName] = enum
 	}
 
 	fmt.Printf("Adding %d services to package %s\n", len(file.Services),
