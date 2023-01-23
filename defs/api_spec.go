@@ -1,16 +1,13 @@
-package main
+package defs
 
 import (
-	"strings"
-
 	gendoc "github.com/pseudomuto/protoc-gen-doc"
-	"google.golang.org/genproto/googleapis/api/annotations"
 )
 
-// Template is a type for encapsulating all the parsed files, messages, fields,
-// enums, services, extensions, etc. into an object that will be supplied to a
-// go template.
-type Template struct {
+// ApiSpec is a type for encapsulating all the parsed files, messages, fields,
+// enums, services, extensions, etc. into an object that will be supplied to
+// the markdown exporter.
+type ApiSpec struct {
 	// The files that were parsed
 	Files []*File `json:"files"`
 
@@ -18,16 +15,7 @@ type Template struct {
 	// supported languages.
 	Scalars []*ScalarValue `json:"scalarValueTypes"`
 
-	RESTTypes map[string]interface{} `json:"restTypes"`
-
-	RepoURL              string   `json:"repoURL"`
-	Commit               string   `json:"commit"`
-	ProtoSrcDir          string   `json:"protoSrcDir"`
-	ExperimentalPackages []string `json:"experimentalPackages"`
-	GrpcPort             uint16   `json:"grpcPort"`
-	RESTPort             uint16   `json:"restPort"`
-	CliCmd               string   `json:"cliCmd"`
-	DaemonCli            string   `json:"daemonCmd"`
+	RESTTypes map[string]*RESTType `json:"restTypes"`
 }
 
 // File wraps all the relevant parsed info about a proto file. File objects
@@ -89,70 +77,6 @@ type ServiceMethod struct {
 	Options map[string]interface{} `json:"options,omitempty"`
 }
 
-type RESTMapping struct {
-	Method  string      `json:"method"`
-	Path    string      `json:"path"`
-	Details interface{} `json:"details"`
-}
-
-func NewRESTMapping(rule *annotations.HttpRule,
-	restPaths map[string]map[string]interface{}) *RESTMapping {
-
-	var m *RESTMapping
-	switch {
-	case rule.GetGet() != "":
-		m = &RESTMapping{
-			Method: "GET",
-			Path:   rule.GetGet(),
-		}
-
-	case rule.GetPost() != "":
-		m = &RESTMapping{
-			Method: "POST",
-			Path:   rule.GetPost(),
-		}
-
-	case rule.GetDelete() != "":
-		m = &RESTMapping{
-			Method: "DELETE",
-			Path:   rule.GetDelete(),
-		}
-
-	case rule.GetPatch() != "":
-		m = &RESTMapping{
-			Method: "PATCH",
-			Path:   rule.GetPatch(),
-		}
-
-	case rule.GetPut() != "":
-		m = &RESTMapping{
-			Method: "PUT",
-			Path:   rule.GetPut(),
-		}
-
-	case rule.GetCustom() != nil:
-		m = &RESTMapping{
-			Method: rule.GetCustom().Kind,
-			Path:   rule.GetCustom().Path,
-		}
-
-	default:
-		m = &RESTMapping{
-			Method: "UNKNOWN",
-			Path:   "",
-		}
-	}
-
-	methods, ok := restPaths[m.Path]
-	if !ok {
-		return m
-	}
-
-	m.Details = methods[strings.ToLower(m.Method)]
-
-	return m
-}
-
 // ScalarValue contains information about scalar value types in protobuf. The
 // common use case for this type is to know which language specific type maps to
 // the protobuf type.
@@ -173,6 +97,6 @@ type ScalarValue struct {
 }
 
 type Swagger struct {
-	Paths       map[string]map[string]interface{} `json:"paths"`
-	Definitions map[string]interface{}            `json:"definitions"`
+	Paths       map[string]map[string]*RESTDetails `json:"paths"`
+	Definitions map[string]*RESTType               `json:"definitions"`
 }

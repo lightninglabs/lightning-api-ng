@@ -1,15 +1,13 @@
 #!/bin/bash
+set -e
 
 mkdir -p build
 go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
 
-go build -o merger .
+go build -o mdgen ./cmd/mdgen/
 
-set -e
 
-function compile() {
-  echo "Using ${COMPONENT} repo URL ${REPO_URL} and commit ${CHECKOUT_COMMIT}"
-
+function initrepo() {
   PROTO_DIR=$PROTO_ROOT_DIR/$COMPONENT
   LOCAL_REPO_PATH=./build/$COMPONENT
   if [[ ! -d $LOCAL_REPO_PATH ]]; then
@@ -26,7 +24,7 @@ function compile() {
   eval $INSTALL_CMD
   popd
 
-  # Copy over all proto and json files from the checked out lnd source directory.
+  # Copy over all proto and json files from the checked out source directory.
   mkdir -p $PROTO_DIR
   rsync -a --prune-empty-dirs --include '*/' --include '*.proto' \
     --include '*.json' --include '*.yaml' --exclude '*' \
@@ -37,9 +35,22 @@ function compile() {
   protoc -I. -I/usr/local/include \
     --doc_out=json,generated.json:. $proto_files
   popd
+}
+
+function compile() {
+  echo "Using ${COMPONENT} repo URL ${REPO_URL} and commit ${CHECKOUT_COMMIT}"
+
+  if [[ "${INIT_REPOS}" == "true" ]]; then
+    initrepo
+  else
+    # If we're not initializing the repos, we still need to the COMMIT variable
+    pushd ./build/$COMPONENT > /dev/null
+    COMMIT=$(git rev-parse HEAD)
+    popd > /dev/null
+  fi
   
   export REPO_URL COMMIT PROTO_SRC_DIR EXPERIMENTAL_PACKAGES GRPC_PORT REST_PORT COMMAND DAEMON
-  ./merger $COMPONENT
+  ./mdgen $COMPONENT
 }
 
 # Generic options.
@@ -56,9 +67,13 @@ TARO_FORK="${TARO_FORK:-lightninglabs}"
 TARO_COMMIT="${TARO_COMMIT:-main}"
 PROTO_ROOT_DIR="build/protos"
 
+# Set to 'false' to skip cloning and building each repo 
+INIT_REPOS="${INIT_REPOS:-true}"
+
 # Remove previously generated templates.
-rm -rf $PROTO_ROOT_DIR
-rm -rf source/*.html.md
+if [[ "${INIT_REPOS}" == "true" ]]; then
+  rm -rf $PROTO_ROOT_DIR
+fi
 
 ########################
 ## Compile docs for lnd
