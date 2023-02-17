@@ -102,8 +102,8 @@ func (m *Method) NestedMessages() []*Message {
 	if m.nestedMessages == nil {
 		// Create a new map and populated it with the nested messages.
 		messages := make(map[string]*Message)
-		m.Service.Pkg.App.GetNestedMessages(m.Request(), messages)
-		m.Service.Pkg.App.GetNestedMessages(m.Response(), messages)
+		m.Service.Pkg.App.GetNestedMessages(m.Request(), messages, 10)
+		m.Service.Pkg.App.GetNestedMessages(m.Response(), messages, 10)
 
 		// Convert the map to a slice.
 		m.nestedMessages = make([]*Message, 0, len(messages))
@@ -123,8 +123,8 @@ func (m *Method) NestedEnums() []*Enum {
 	if m.nestedEnums == nil {
 		// Create a new map and populated it with the nested enums.
 		enums := make(map[string]*Enum)
-		m.Service.Pkg.App.GetNestedEnums(m.Request(), enums)
-		m.Service.Pkg.App.GetNestedEnums(m.Response(), enums)
+		m.Service.Pkg.App.GetNestedEnums(m.Request(), enums, 10)
+		m.Service.Pkg.App.GetNestedEnums(m.Response(), enums, 10)
 
 		// Convert the map to a slice.
 		m.nestedEnums = make([]*Enum, 0, len(enums))
