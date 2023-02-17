@@ -188,8 +188,10 @@ func (a *App) GetMessage(fullType string) (*Message, error) {
 }
 
 // GetNestedMessages recursively updates a map of all nested messages for the
-// given message.
-func (a *App) GetNestedMessages(message *Message, allMessages map[string]*Message) {
+// given message. The depth parameter is used to limit the recursion.
+func (a *App) GetNestedMessages(message *Message,
+	allMessages map[string]*Message, depth uint8) {
+
 	for _, field := range message.Fields {
 		// Only include the non-native field types (ex: lnrpc.OutPoint)
 		if !strings.Contains(field.FullType, ".") {
@@ -199,9 +201,9 @@ func (a *App) GetNestedMessages(message *Message, allMessages map[string]*Messag
 		msg, _ := a.GetMessage(field.FullType)
 
 		// Add the message to the map if it was found.
-		if msg != nil {
+		if msg != nil && depth > 0 {
 			allMessages[field.FullType] = msg
-			a.GetNestedMessages(msg, allMessages)
+			a.GetNestedMessages(msg, allMessages, depth-1)
 		}
 	}
 }
@@ -225,8 +227,10 @@ func (a *App) GetEnum(fullType string) (*Enum, error) {
 }
 
 // GetNestedEnums recursively updates a map of all nested enums for the given
-// message.
-func (a *App) GetNestedEnums(message *Message, allEnums map[string]*Enum) {
+// message. The depth parameter is used to limit the recursion.
+func (a *App) GetNestedEnums(message *Message, allEnums map[string]*Enum,
+	depth uint8) {
+
 	for _, field := range message.Fields {
 		// Only include the non-native field types (ex: lnrpc.OutPoint)
 		if !strings.Contains(field.FullType, ".") {
@@ -244,9 +248,9 @@ func (a *App) GetNestedEnums(message *Message, allEnums map[string]*Enum) {
 		// If the enum wasn't found, look for a nested message which
 		// may have enum fields.
 		msg, _ := a.GetMessage(field.FullType)
-		if msg != nil {
+		if msg != nil && depth > 0 {
 			// Search the nested messages for more enums.
-			a.GetNestedEnums(msg, allEnums)
+			a.GetNestedEnums(msg, allEnums, depth-1)
 		}
 	}
 }
