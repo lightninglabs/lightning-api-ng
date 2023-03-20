@@ -103,6 +103,12 @@ const config = {
             label: 'Taro',
           },
           {
+            type: 'doc',
+            docId: 'api/lit/index',
+            position: 'left',
+            label: 'LiT',
+          },
+          {
             href: 'https://github.com/lightninglabs/lightning-api-ng/issues',
             label: 'Feedback',
             position: 'right',
@@ -134,6 +140,10 @@ const config = {
               {
                 label: 'Taro',
                 to: 'api/taro',
+              },
+              {
+                label: 'LiT',
+                to: 'api/lit',
               },
             ],
           },
@@ -174,8 +184,12 @@ const config = {
                 href: 'http://github.com/lightninglabs/faraday',
               },
               {
-                label: 'lightninglabs/pool',
-                href: 'http://github.com/lightninglabs/pool',
+                label: 'lightninglabs/taro',
+                href: 'http://github.com/lightninglabs/taro',
+              },
+              {
+                label: 'lightninglabs/lit',
+                href: 'http://github.com/lightninglabs/lit',
               },
             ],
           },

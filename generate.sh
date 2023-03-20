@@ -65,6 +65,8 @@ POOL_FORK="${POOL_FORK:-lightninglabs}"
 POOL_COMMIT="${POOL_COMMIT:-master}"
 TARO_FORK="${TARO_FORK:-lightninglabs}"
 TARO_COMMIT="${TARO_COMMIT:-main}"
+LIT_FORK="${LIT_FORK:-lightninglabs}"
+LIT_COMMIT="${LIT_COMMIT:-master}"
 PROTO_ROOT_DIR="build/protos"
 
 # Set to 'false' to skip cloning and building each repo 
@@ -87,7 +89,6 @@ PROTO_SRC_DIR=lnrpc
 EXCLUDE_PROTOS="none"
 EXPERIMENTAL_PACKAGES="autopilotrpc signrpc walletrpc chainrpc invoicesrpc watchtowerrpc neutrinorpc monitoring peersrpc kvdb_postgres kvdb_etcd"
 INSTALL_CMD="make clean && make install tags=\"$EXPERIMENTAL_PACKAGES\""
-APPEND_TO_FILE=source/lnd.html.md
 GRPC_PORT=10009
 REST_PORT=8080
 compile
@@ -104,7 +105,6 @@ PROTO_SRC_DIR=""
 EXCLUDE_PROTOS="server.proto -not -name common.proto"
 EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
-APPEND_TO_FILE=source/loop.html.md
 GRPC_PORT=11010
 REST_PORT=8081
 compile
@@ -121,7 +121,6 @@ PROTO_SRC_DIR=frdrpc
 EXCLUDE_PROTOS="none"
 EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
-APPEND_TO_FILE=source/faraday.html.md
 GRPC_PORT=8465
 REST_PORT=8082
 compile
@@ -139,7 +138,6 @@ EXCLUDE_PROTOS="none"
 EXCLUDE_SERVICES="ChannelAuctioneer"
 EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
-APPEND_TO_FILE=source/pool.html.md
 GRPC_PORT=12010
 REST_PORT=8281
 compile
@@ -152,12 +150,28 @@ CHECKOUT_COMMIT=$TARO_COMMIT
 COMPONENT=taro
 COMMAND=tarocli
 DAEMON=tarod
-PROTO_SRC_DIR=""
+PROTO_SRC_DIR="tarorpc"
 EXCLUDE_PROTOS="none"
 EXCLUDE_SERVICES=""
 EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
-APPEND_TO_FILE=source/taro.html.md
 GRPC_PORT=10029
 REST_PORT=8089
+compile
+
+########################
+## Compile docs for lit
+########################
+REPO_URL="https://github.com/${LIT_FORK}/lightning-terminal"
+CHECKOUT_COMMIT=$LIT_COMMIT
+COMPONENT=lit
+COMMAND=litcli
+DAEMON=litd
+PROTO_SRC_DIR="litrpc"
+EXCLUDE_PROTOS="none"
+EXCLUDE_SERVICES=""
+EXPERIMENTAL_PACKAGES=""
+INSTALL_CMD="make install"
+GRPC_PORT=8443
+REST_PORT=8443
 compile
