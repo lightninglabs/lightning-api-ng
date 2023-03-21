@@ -19,7 +19,7 @@ const MessageField: React.FC<Props> = ({ name, children }) => {
   if (!!children) cn = `${cn} ${styles.collapsible}`;
   let deprecated = false;
   React.Children.forEach(children, (child) => {
-    if (typeof child === 'string' && child.includes('deprecated'))
+    if (typeof child === 'string' && child.toLowerCase().includes('deprecated'))
       deprecated = true;
   });
 
