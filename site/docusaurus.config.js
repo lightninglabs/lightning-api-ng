@@ -98,9 +98,9 @@ const config = {
           },
           {
             type: 'doc',
-            docId: 'api/taro/index',
+            docId: 'api/taproot-assets/index',
             position: 'left',
-            label: 'Taro',
+            label: 'Taproot Assets Protocol',
           },
           {
             type: 'doc',
@@ -138,8 +138,8 @@ const config = {
                 to: 'api/faraday',
               },
               {
-                label: 'Taro',
-                to: 'api/taro',
+                label: 'Taproot Assets Protocol',
+                to: 'api/taproot-assets',
               },
               {
                 label: 'LiT',
@@ -184,8 +184,8 @@ const config = {
                 href: 'http://github.com/lightninglabs/faraday',
               },
               {
-                label: 'lightninglabs/taro',
-                href: 'http://github.com/lightninglabs/taro',
+                label: 'lightninglabs/taproot-assets',
+                href: 'http://github.com/lightninglabs/taproot-assets',
               },
               {
                 label: 'lightninglabs/lit',

@@ -1,9 +1,7 @@
 # Lightning API Docs
 
-This repo contains the source code used to generate the API docs websites for:
-
-- LND: https://api.lightning.community/
-- Loop, Pool, Faraday, and Taro: https://lightning.engineering/api-docs/
+This repo contains the source code used to generate the API docs websites for LND,
+Loop, Pool, Faraday, and Taproot Assets Protocol: https://lightning.engineering/api-docs/
 
 ## Architecture
 
@@ -16,7 +14,7 @@ repos:
 - Loop: https://github.com/lightninglabs/loop
 - Pool: https://github.com/lightninglabs/pool
 - Faraday: https://github.com/lightninglabs/faraday
-- Taro: https://github.com/lightninglabs/taro
+- Taproot Assets Protocol: https://github.com/lightninglabs/taproot-assets
 
 There is a multi-stage pipeline to consume the protobuf & Swagger files and
 convert them into an HTML static website. The process is as follows:
