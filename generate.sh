@@ -63,8 +63,8 @@ FARADAY_FORK="${FARADAY_FORK:-lightninglabs}"
 FARADAY_COMMIT="${FARADAY_COMMIT:-master}"
 POOL_FORK="${POOL_FORK:-lightninglabs}"
 POOL_COMMIT="${POOL_COMMIT:-master}"
-TARO_FORK="${TARO_FORK:-lightninglabs}"
-TARO_COMMIT="${TARO_COMMIT:-main}"
+TAPD_FORK="${TAPD_FORK:-lightninglabs}"
+TAPD_COMMIT="${TAPD_COMMIT:-main}"
 LIT_FORK="${LIT_FORK:-lightninglabs}"
 LIT_COMMIT="${LIT_COMMIT:-master}"
 PROTO_ROOT_DIR="build/protos"
@@ -143,14 +143,14 @@ REST_PORT=8281
 compile
 
 ########################
-## Compile docs for taro
+## Compile docs for taproot-assets
 ########################
-REPO_URL="https://github.com/${TARO_FORK}/taro"
-CHECKOUT_COMMIT=$TARO_COMMIT
-COMPONENT=taro
-COMMAND=tarocli
-DAEMON=tarod
-PROTO_SRC_DIR="tarorpc"
+REPO_URL="https://github.com/${TAPD_FORK}/taproot-assets"
+CHECKOUT_COMMIT=$TAPD_COMMIT
+COMPONENT=taproot-assets
+COMMAND=tapcli
+DAEMON=tapd
+PROTO_SRC_DIR="taprpc"
 EXCLUDE_PROTOS="none"
 EXCLUDE_SERVICES=""
 EXPERIMENTAL_PACKAGES=""
