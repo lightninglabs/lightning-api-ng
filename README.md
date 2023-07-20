@@ -15,6 +15,7 @@ repos:
 - Pool: https://github.com/lightninglabs/pool
 - Faraday: https://github.com/lightninglabs/faraday
 - Taproot Assets Protocol: https://github.com/lightninglabs/taproot-assets
+- Lightning Terminal (LiT): https://github.com/lightninglabs/lightning-terminal
 
 There is a multi-stage pipeline to consume the protobuf & Swagger files and
 convert them into an HTML static website. The process is as follows:
