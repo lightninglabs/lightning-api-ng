@@ -70,10 +70,7 @@ func LoadApiSpec(config *config.Config) *defs.ApiSpec {
 					externalLink,
 				)
 
-				err := parseMethodDescription(method)
-				if err != nil {
-					fail(err)
-				}
+				parseMethodDescription(method)
 			}
 		}
 
@@ -179,10 +176,20 @@ func assignSourceLinks(method *defs.ServiceMethod, source, baseLink string) {
 	method.ResponseTypeSource = fmt.Sprintf("%s%s", baseLink, suffix)
 }
 
-func parseMethodDescription(method *defs.ServiceMethod) error {
+func parseMethodDescription(method *defs.ServiceMethod) {
 	description := method.Description
 	if subCommandPattern.MatchString(description) {
 		matches := subCommandPattern.FindStringSubmatch(description)
+
+		// Run the command and capture its output.
+		args := append(strings.Split(matches[2], " "), "--help")
+		cmd := exec.Command(matches[1], args...)
+		out, err := cmd.Output()
+		if err != nil {
+			fmt.Printf("error invoking %s: %s\n",
+				method.CommandLine, err.Error())
+			return
+		}
 
 		// At index 0 we have the full matched string, capture groups
 		// start at index 1.
@@ -190,19 +197,8 @@ func parseMethodDescription(method *defs.ServiceMethod) error {
 			"%s %s", matches[1], matches[2],
 		)
 
-		// Run the command and capture its output.
-		args := append(strings.Split(matches[2], " "), "--help")
-		cmd := exec.Command(matches[1], args...)
-		out, err := cmd.Output()
-		if err != nil {
-			return fmt.Errorf("error invoking %s: %w",
-				method.CommandLine, err)
-		}
-
 		method.CommandLineHelp = string(out)
 	}
-
-	return nil
 }
 
 func loadGrpcAPIServiceFromYAML(yamlFileContents []byte,
