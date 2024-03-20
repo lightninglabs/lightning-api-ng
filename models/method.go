@@ -40,14 +40,12 @@ type Method struct {
 // NewMethod creates a new method from a method definition.
 func NewMethod(methodDef *defs.ServiceMethod, service *Service) *Method {
 	m := &Method{
-		Service:     service,
-		Name:        methodDef.Name,
-		Description: parseDescription(methodDef.Description),
-		Source:      methodDef.Source,
-		CommandLine: methodDef.CommandLine,
-		CommandLineHelp: markdown.CleanDescription(
-			methodDef.CommandLineHelp, false,
-		),
+		Service:            service,
+		Name:               methodDef.Name,
+		Description:        parseDescription(methodDef.Description),
+		Source:             methodDef.Source,
+		CommandLine:        methodDef.CommandLine,
+		CommandLineHelp:    methodDef.CommandLineHelp,
 		RequestType:        methodDef.RequestType,
 		RequestFullType:    methodDef.RequestFullType,
 		RequestTypeSource:  methodDef.RequestTypeSource,
