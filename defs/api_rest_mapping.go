@@ -28,7 +28,9 @@ type RESTParameter struct {
 }
 
 type RESTSchema struct {
-	Ref string `json:"$ref"`
+	Ref        string                   `json:"$ref"`
+	Type       string                   `json:"type"`
+	Properties map[string]*RESTProperty `json:"properties"`
 }
 
 type RESTType struct {

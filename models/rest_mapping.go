@@ -34,26 +34,43 @@ func NewRestMapping(mappingDef defs.RESTMapping) *RestMapping {
 	mapping.Parameters = make(map[string]*RestParameter)
 	if mappingDef.Details != nil && mappingDef.Details.Parameters != nil {
 		for _, paramDef := range mappingDef.Details.Parameters {
-			if mapping.Method == "POST" &&
-				paramDef.Name == "body" &&
-				paramDef.Schema != nil &&
-				paramDef.Schema.Ref != "" {
-
-				// Indicate that all of the parameters are in
-				// the body.
-				mapping.HasBodyParams = true
-			} else {
-				param := &RestParameter{
-					Name:   paramDef.Name,
-					Format: paramDef.Format,
-					Type:   paramDef.Type,
-					In:     paramDef.In,
-				}
-				mapping.Parameters[param.Name] = param
-			}
+			mapping.addParameter(paramDef)
 		}
 	}
 	return mapping
+}
+
+// addParameter adds a parameter to the mapping.
+func (r *RestMapping) addParameter(paramDef *defs.RESTParameter) {
+	if r.Method == "POST" &&
+		paramDef.Name == "body" &&
+		paramDef.Schema != nil {
+
+		if paramDef.Schema.Ref != "" {
+			// Indicate that all of the parameters are in
+			// the body.
+			r.HasBodyParams = true
+		} else if paramDef.Schema.Properties != nil {
+			// Add all of the properties as parameters.
+			for name, prop := range paramDef.Schema.Properties {
+				param := &RestParameter{
+					Name:   name,
+					Format: prop.Format,
+					Type:   prop.Type,
+					In:     "body",
+				}
+				r.Parameters[name] = param
+			}
+		}
+	} else {
+		param := &RestParameter{
+			Name:   paramDef.Name,
+			Format: paramDef.Format,
+			Type:   paramDef.Type,
+			In:     paramDef.In,
+		}
+		r.Parameters[param.Name] = param
+	}
 }
 
 // UpdateMessage updates the REST type and placement of a message's fields.
