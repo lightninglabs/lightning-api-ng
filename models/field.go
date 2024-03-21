@@ -80,7 +80,7 @@ func (f *Field) EncodingTip() string {
 				f.RestPlacement),
 			"<br />",
 			fmt.Sprintf("See [REST Encoding]"+
-				"(/docs/api/%s/#rest-encoding).",
+				"(/api/%s/#rest-encoding).",
 				f.Message.Package.App.Name),
 			"</Tip>",
 		}, "")
