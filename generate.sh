@@ -30,9 +30,16 @@ function initrepo() {
     --include '*.json' --include '*.yaml' --exclude '*' \
     $LOCAL_REPO_PATH/$PROTO_SRC_DIR/ $PROTO_DIR/
 
+  # Copy any additional proto files from other projects.
+  INCLUDE_FLAG=""
+  if [[ ! -z $INCLUDE_PROTOS ]]; then
+    echo "Including protos from $INCLUDE_PROTOS"
+    INCLUDE_FLAG="-I$INCLUDE_PROTOS"
+  fi
+
   pushd $PROTO_DIR
   proto_files=$(find . -name '*.proto' -not -name $EXCLUDE_PROTOS)
-  protoc -I. -I/usr/local/include \
+  protoc -I. -I/usr/local/include $INCLUDE_FLAG \
     --doc_out=json,generated.json:. $proto_files
   popd
 }
@@ -151,6 +158,7 @@ COMPONENT=taproot-assets
 COMMAND=tapcli
 DAEMON=tapd
 PROTO_SRC_DIR="taprpc"
+INCLUDE_PROTOS="../lnd"
 EXCLUDE_PROTOS="none"
 EXCLUDE_SERVICES=""
 EXPERIMENTAL_PACKAGES=""
