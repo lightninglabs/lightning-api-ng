@@ -10,6 +10,7 @@ const config = {
   tagline: 'Dinosaurs are cool',
   url: 'https://lightning.engineering',
   baseUrl: '/api-docs/',
+  trailingSlash: true,
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon-32x32.png',
