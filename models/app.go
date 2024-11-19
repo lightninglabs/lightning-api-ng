@@ -150,7 +150,7 @@ func (a *App) RestEndpoints() []*RestEndpoint {
 			RestPath:   method.RestMapping.Path,
 			RestMethod: method.RestMapping.Method,
 			LinkUrl: fmt.Sprintf(
-				"%s/%s",
+				"../%s/%s/",
 				markdown.ToKebabCase(method.Service.Name),
 				markdown.ToKebabCase(method.Name),
 			),
