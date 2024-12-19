@@ -38,7 +38,18 @@ function initrepo() {
   fi
 
   pushd $PROTO_DIR
-  proto_files=$(find . -name '*.proto' -not -name $EXCLUDE_PROTOS)
+  proto_files=$(find . -name '*.proto' -not -name $EXCLUDE_PROTOS | tr '\n' ' ')
+
+  if [[ "$PROTO_DIR" == "$PROTO_ROOT_DIR/loop" ]]; then
+    # Update imports in swapserverrpc
+    sed -i 's|import "common.proto"|import "swapserverrpc/common.proto"|g' swapserverrpc/server.proto
+    sed -i 's|import "reservation.proto"|import "swapserverrpc/reservation.proto"|g' swapserverrpc/server.proto
+    sed -i 's|import "server.proto"|import "swapserverrpc/server.proto"|g' swapserverrpc/staticaddr.proto
+
+    # Update imports in looprpc/client.proto
+    sed -i 's|import "common.proto"|import "swapserverrpc/common.proto"|g' looprpc/client.proto
+  fi
+  
   protoc -I. -I/usr/local/include $INCLUDE_FLAG \
     --doc_out=json,generated.json:. $proto_files
   popd
@@ -108,7 +119,7 @@ CHECKOUT_COMMIT=$LOOP_COMMIT
 COMPONENT=loop
 COMMAND=loop
 DAEMON=loopd
-PROTO_SRC_DIR="swapserverrpc"
+PROTO_SRC_DIR=""
 EXCLUDE_PROTOS="server.proto -not -name common.proto"
 EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
