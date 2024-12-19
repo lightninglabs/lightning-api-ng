@@ -38,7 +38,8 @@ function initrepo() {
   fi
 
   pushd $PROTO_DIR
-  proto_files=$(find . -name '*.proto' -not -name $EXCLUDE_PROTOS)
+  proto_files=$(find . -name '*.proto' -not -path "$EXCLUDE_PROTOS")
+  
   protoc -I. -I/usr/local/include $INCLUDE_FLAG \
     --doc_out=json,generated.json:. $proto_files
   popd
@@ -108,8 +109,8 @@ CHECKOUT_COMMIT=$LOOP_COMMIT
 COMPONENT=loop
 COMMAND=loop
 DAEMON=loopd
-PROTO_SRC_DIR="swapserverrpc"
-EXCLUDE_PROTOS="server.proto -not -name common.proto"
+PROTO_SRC_DIR=""
+EXCLUDE_PROTOS="./swapserverrpc/*"
 EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
 GRPC_PORT=11010
