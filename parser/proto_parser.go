@@ -186,8 +186,8 @@ func parseMethodDescription(method *defs.ServiceMethod) {
 		cmd := exec.Command(matches[1], args...)
 		out, err := cmd.Output()
 		if err != nil {
-			fmt.Printf("error invoking %s: %s\n",
-				method.CommandLine, err.Error())
+			fmt.Printf("error invoking %s: %s\n", matches[1],
+				err.Error())
 			return
 		}
 
