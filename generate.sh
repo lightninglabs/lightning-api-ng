@@ -151,8 +151,29 @@ REST_PORT=8281
 compile
 
 ########################
+## Compile docs for lit
+########################
+REPO_URL="https://github.com/${LIT_FORK}/lightning-terminal"
+CHECKOUT_COMMIT=$LIT_COMMIT
+COMPONENT=lit
+COMMAND=litcli
+DAEMON=litd
+PROTO_SRC_DIR="litrpc"
+EXCLUDE_PROTOS="none"
+EXCLUDE_SERVICES=""
+EXPERIMENTAL_PACKAGES=""
+INSTALL_CMD="make go-install"
+GRPC_PORT=8443
+REST_PORT=8443
+compile
+
+########################
 ## Compile docs for taproot-assets
 ########################
+
+# This must come last, because some of the proto files reference litcli
+# commands. So we need to have litcli installed first.
+
 REPO_URL="https://github.com/${TAPD_FORK}/taproot-assets"
 CHECKOUT_COMMIT=$TAPD_COMMIT
 COMPONENT=taproot-assets
@@ -166,21 +187,4 @@ EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
 GRPC_PORT=10029
 REST_PORT=8089
-compile
-
-########################
-## Compile docs for lit
-########################
-REPO_URL="https://github.com/${LIT_FORK}/lightning-terminal"
-CHECKOUT_COMMIT=$LIT_COMMIT
-COMPONENT=lit
-COMMAND=litcli
-DAEMON=litd
-PROTO_SRC_DIR="litrpc"
-EXCLUDE_PROTOS="none"
-EXCLUDE_SERVICES=""
-EXPERIMENTAL_PACKAGES=""
-INSTALL_CMD="make install"
-GRPC_PORT=8443
-REST_PORT=8443
 compile
