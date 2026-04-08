@@ -3,7 +3,7 @@ import base64, codecs, json, requests
 
 REST_HOST = 'localhost:{{.RestPort}}'{{if .RequiresMacaroon}}
 MACAROON_PATH = '{{.MacaroonPath}}'{{end}}
-TLS_PATH = '{{upper .AppName}}_DIR/tls.cert'
+TLS_PATH = '{{.TlsPath}}'
 
 url = f'https://{REST_HOST}{{.Method.RestPath}}'{{if .RequiresMacaroon}}
 macaroon = codecs.encode(open(MACAROON_PATH, 'rb').read(), 'hex')

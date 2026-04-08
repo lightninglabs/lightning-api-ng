@@ -53,12 +53,30 @@ func (c *CodeSamples) LoaderFiles() string {
 }
 
 func (c *CodeSamples) MacaroonPath() string {
-	if c.AppName() == "lnd" {
+	switch c.AppName() {
+	case "lnd":
 		return "LND_DIR/data/chain/bitcoin/regtest/admin.macaroon"
+	case "taproot-assets":
+		return "TAPD_DIR/data/regtest/admin.macaroon"
+	default:
+		return fmt.Sprintf("%s_DIR/regtest/%s.macaroon",
+			strings.ToUpper(c.AppName()), c.AppName())
 	}
+}
 
-	return fmt.Sprintf("%s_DIR/regtest/%s.macaroon",
-		strings.ToUpper(c.AppName()), c.AppName())
+// TlsPath returns the TLS cert path with placeholder directory for use
+// in Python/JS code samples.
+func (c *CodeSamples) TlsPath() string {
+	dirVar := fmt.Sprintf("%s_DIR", strings.ToUpper(c.AppName()))
+	if c.AppName() == "taproot-assets" {
+		dirVar = "TAPD_DIR"
+	}
+	switch c.AppName() {
+	case "loop", "faraday", "pool":
+		return fmt.Sprintf("%s/regtest/tls.cert", dirVar)
+	default:
+		return fmt.Sprintf("%s/tls.cert", dirVar)
+	}
 }
 
 func (c *CodeSamples) RequiresMacaroon() bool {
