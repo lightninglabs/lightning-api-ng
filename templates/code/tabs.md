@@ -12,7 +12,7 @@
 {{template "grpc_py.md" .}}
 
 </TabItem>
-<TabItem value="grpcurl" label="grpcurl">
+<TabItem value="shell" label="grpcurl">
 
 {{template "grpc_grpcurl.md" .}}
 
@@ -33,22 +33,21 @@
 {{template "rest_py.md" .}}
 
 </TabItem>
-<TabItem value="curl" label="curl">
+<TabItem value="shell" label="curl">
 
 {{template "rest_curl.md" .}}
 
 </TabItem>
 </Tabs>
 
-</TabItem>{{end}}
-<TabItem value="bash" label="Shell">
+</TabItem>{{end}}{{if (ne .Method.CommandLine "")}}
+<TabItem value="bash" label="{{.CliCommand}}">
 
-```bash{{if (ne .Method.CommandLine "")}}
+```bash
 $ {{.Method.CommandLine}} --help
 
-{{.Method.CommandLineHelp}}{{else}}
-# There is no CLI command for this RPC{{end}}
+{{.Method.CommandLineHelp}}
 ```
 
-</TabItem>
+</TabItem>{{end}}
 </Tabs>

@@ -263,6 +263,10 @@ func (c *CodeSamples) ShellRequestData() string {
 	return "{ " + strings.Join(parts, ", ") + " }"
 }
 
+func (c *CodeSamples) CliCommand() string {
+	return c.Method.Service.Pkg.App.Config.CliCmd
+}
+
 func (c *CodeSamples) PythonRestArgs() string {
 	args := make([]string, 0)
 	if c.RequiresMacaroon() {
