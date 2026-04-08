@@ -12,6 +12,11 @@
 {{template "grpc_py.md" .}}
 
 </TabItem>
+<TabItem value="grpcurl" label="grpcurl">
+
+{{template "grpc_grpcurl.md" .}}
+
+</TabItem>
 </Tabs>
 
 </TabItem>{{if (ne .Method.RestPath "")}}
