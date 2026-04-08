@@ -33,6 +33,11 @@
 {{template "rest_py.md" .}}
 
 </TabItem>
+<TabItem value="curl" label="curl">
+
+{{template "rest_curl.md" .}}
+
+</TabItem>
 </Tabs>
 
 </TabItem>{{end}}
