@@ -6,7 +6,7 @@ import {{.StubFileName}}_pb2 as {{.PackageName}}, {{.StubFileName}}_pb2_grpc as 
 
 GRPC_HOST = 'localhost:{{.GrpcPort}}'{{if .RequiresMacaroon}}
 MACAROON_PATH = '{{.MacaroonPath}}'{{end}}
-TLS_PATH = '{{upper .AppName}}_DIR/tls.cert'
+TLS_PATH = '{{.TlsPath}}'
 {{if .RequiresMacaroon}}
 # create macaroon credentials
 macaroon = codecs.encode(open(MACAROON_PATH, 'rb').read(), 'hex')

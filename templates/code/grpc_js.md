@@ -5,7 +5,7 @@ const protoLoader = require('@grpc/proto-loader');
 
 const GRPC_HOST = 'localhost:{{.GrpcPort}}'{{if .RequiresMacaroon}}
 const MACAROON_PATH = '{{.MacaroonPath}}'{{end}}
-const TLS_PATH = '{{upper .AppName}}_DIR/tls.cert'
+const TLS_PATH = '{{.TlsPath}}'
 
 const loaderOptions = {
   keepCase: true,
