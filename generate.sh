@@ -101,6 +101,9 @@ GRPC_PORT=10009
 REST_PORT=8080
 compile
 
+# Create a symlink so other components can resolve "lnrpc/..." proto imports.
+ln -sfn lnd $PROTO_ROOT_DIR/lnrpc
+
 ########################
 ## Compile docs for loop
 ########################
@@ -110,6 +113,7 @@ COMPONENT=loop
 COMMAND=loop
 DAEMON=loopd
 PROTO_SRC_DIR=""
+INCLUDE_PROTOS=".."
 EXCLUDE_PROTOS="./swapserverrpc/*"
 EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
@@ -126,6 +130,7 @@ COMPONENT=faraday
 COMMAND=frcli
 DAEMON=faraday
 PROTO_SRC_DIR=frdrpc
+INCLUDE_PROTOS=""
 EXCLUDE_PROTOS="none"
 EXPERIMENTAL_PACKAGES=""
 INSTALL_CMD="make install"
@@ -142,6 +147,7 @@ COMPONENT=pool
 COMMAND=pool
 DAEMON=poold
 PROTO_SRC_DIR=""
+INCLUDE_PROTOS=""
 EXCLUDE_PROTOS="none"
 EXCLUDE_SERVICES="ChannelAuctioneer"
 EXPERIMENTAL_PACKAGES=""
