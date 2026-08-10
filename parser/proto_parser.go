@@ -214,6 +214,12 @@ func loadGrpcAPIServiceFromYAML(yamlFileContents []byte,
 
 	parsedHttp := yamlContents.(map[string]interface{})["http"]
 
+	// The yaml file contains no "http" section when the service defines
+	// no REST bindings, which means there are no rules to parse.
+	if parsedHttp == nil {
+		return &annotations.Http{}, nil
+	}
+
 	jsonContents, err := json.Marshal(parsedHttp)
 	if err != nil {
 		return nil, err
